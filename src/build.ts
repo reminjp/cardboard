@@ -1,3 +1,112 @@
-export async function runBuild(path: string) {
-  console.log('build', path);
+import * as csv from 'std/csv/mod.ts';
+import * as path from 'std/path/mod.ts';
+import * as toml from 'std/toml/mod.ts';
+
+import type { Font } from 'satori';
+
+import { compile } from './core/compile.ts';
+import { render } from './core/render.ts';
+import { Length } from './core/utils/length.ts';
+import { projectSchema } from './schemas.ts';
+import { Table, Template } from './core/types.ts';
+import { postProcess } from './core/postProcess.ts';
+
+export async function runBuild(
+  projectDirectoryPath: string | undefined,
+  isPrintAndPlay: boolean,
+) {
+  /*
+   * Read source files.
+   */
+
+  const projectDirectoryAbsolutePath = projectDirectoryPath
+    ? path.resolve(projectDirectoryPath)
+    : Deno.cwd();
+  const projectFileAbsolutePath = path.join(
+    projectDirectoryAbsolutePath,
+    'cardboard.toml',
+  );
+  const resolvePathInProjectFile = (value: string) =>
+    value.startsWith('~/')
+      ? path.join(homeDir, value.slice(2))
+      : path.resolve(projectDirectoryAbsolutePath, value);
+
+  const project = projectSchema.parse(
+    toml.parse(await Deno.readTextFile(projectFileAbsolutePath)),
+  );
+
+  // TODO: Skip unused tables and templates.
+  const tableByName = new Map<string, Table>();
+  for (const tableConfig of project.tables) {
+    const tableCsvAbsolutePath = resolvePathInProjectFile(tableConfig.path);
+    const tableCsv = await Deno.readTextFile(tableCsvAbsolutePath);
+    const table = csv.parse(tableCsv, { skipFirstRow: true });
+    tableByName.set(tableConfig.name, table);
+  }
+
+  const templateByName = new Map<string, Template>();
+  for (const templateConfig of project.templates) {
+    const templateEjsAbsolutePath = resolvePathInProjectFile(
+      templateConfig.path,
+    );
+    const templateEjs = await Deno.readTextFile(templateEjsAbsolutePath);
+    templateByName.set(templateConfig.name, {
+      absolutePath: templateEjsAbsolutePath,
+      ejs: templateEjs,
+      width: Length.from(templateConfig.width),
+      height: Length.from(templateConfig.height),
+    });
+  }
+
+  const homeDir = Deno.env.get('HOME') ?? '';
+
+  const fonts: Font[] = await Promise.all(
+    project.fonts.map(async (font) => ({
+      name: font.name,
+      data: await Deno.readFile(resolvePathInProjectFile(font.path)),
+      weight: font.weight ?? 400,
+      style: font.style ?? 'normal',
+    })),
+  );
+
+  for (const targetConfig of project.targets) {
+    const table = tableByName.get(targetConfig.table);
+    if (!table) {
+      throw new Error(`Undefined table: ${targetConfig.table}`);
+    }
+
+    const template = templateByName.get(targetConfig.template);
+    if (!template) {
+      throw new Error(`Undefined template: ${targetConfig.template}`);
+    }
+
+    /*
+     * Build PDF.
+     */
+
+    const compileResult = await compile({
+      bleed: isPrintAndPlay ? Length.ZERO : Length.from(targetConfig.bleed),
+      fonts,
+      table,
+      template,
+    });
+
+    let pdfBytes = await render({ compileResult });
+
+    pdfBytes = await postProcess({ isPrintAndPlay, pdfBytes, compileResult });
+
+    /*
+     * Write PDF.
+     */
+
+    const pdfFileName = `${targetConfig.name}${
+      isPrintAndPlay ? '_pnp' : ''
+    }.pdf`;
+
+    await Deno.mkdir(resolvePathInProjectFile('build'), { recursive: true });
+    await Deno.writeFile(
+      resolvePathInProjectFile(`build/${pdfFileName}`),
+      pdfBytes,
+    );
+  }
 }

@@ -1,0 +1,39 @@
+[[targets]]
+name = "card_front"
+table = "card"
+template = "card_front"
+bleed = "3mm"
+
+[[targets]]
+name = "card_back"
+table = "card"
+template = "card_back"
+bleed = "3mm"
+
+[[tables]]
+name = "card"
+path = "./card.csv"
+
+[[templates]]
+name = "card_front"
+path = "./card_front.ejs"
+width = "63mm"
+height = "88mm"
+
+[[templates]]
+name = "card_back"
+path = "./card_back.ejs"
+width = "63mm"
+height = "88mm"
+
+[[fonts]]
+name = "Roboto"
+path = "~/Library/Fonts/Roboto-Regular.ttf"
+weight = 400
+style = "normal"
+
+[[fonts]]
+name = "Roboto"
+path = "~/Library/Fonts/Roboto-Bold.ttf"
+weight = 700
+style = "normal"
