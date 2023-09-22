@@ -6,7 +6,7 @@ It reads a card design template (EJS) and tabular data (CSV or Google Sheets) an
 
 ## Usage
 
-Install required software.
+Install requirements.
 
 - [Deno](https://deno.com/)
 - fontconfig (`fc-list` command)
@@ -18,7 +18,7 @@ Install the tool using [`deno install`](https://deno.land/manual/tools/script_in
 deno install --allow-env --allow-net --allow-read --allow-run --allow-write --name cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
 ```
 
-Create a `cardboard.toml` and other resources (see below).
+Create `cardboard.toml` and other resources (see below).
 
 Navigate to the root directory of your project.
 
@@ -32,11 +32,13 @@ Run the build command.
 cardboard build
 ```
 
-### Examples
+### Example projects
 
 - [Card game](./examples/card_game)
 
-### cardboard.toml
+### Project structure
+
+#### cardboard.toml
 
 A `cardboard.toml` is a Cardboard project file.
 It specifies references to tables and templates.
