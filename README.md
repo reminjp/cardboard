@@ -6,11 +6,16 @@ It reads a card design template (EJS) and tabular data (CSV or Google Sheets) an
 
 ## Usage
 
+Install required software.
+
+- [Deno](https://deno.com/)
+- fontconfig (`fc-list` command)
+
 Install the tool using [`deno install`](https://deno.land/manual/tools/script_installer).
 (Run `deno uninstall` command to uninstall.)
 
 ```sh
-deno install --allow-env --allow-net --allow-read --allow-write --name cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
+deno install --allow-env --allow-net --allow-read --allow-run --allow-write --name cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
 ```
 
 Create a `cardboard.toml` and other resources (see below).

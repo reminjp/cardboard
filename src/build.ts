@@ -2,14 +2,13 @@ import * as csv from 'std/csv/mod.ts';
 import * as path from 'std/path/mod.ts';
 import * as toml from 'std/toml/mod.ts';
 
-import type { Font } from 'satori';
-
 import { compile } from './core/compile.ts';
 import { render } from './core/render.ts';
 import { Length } from './core/utils/length.ts';
 import { projectSchema } from './schemas.ts';
 import { Table, Template } from './core/types.ts';
 import { postProcess } from './core/postProcess.ts';
+import { readFontsForSatori } from './core/utils/font.ts';
 
 export async function runBuild(
   projectDirectoryPath: string | undefined,
@@ -27,9 +26,7 @@ export async function runBuild(
     'cardboard.toml',
   );
   const resolvePathInProjectFile = (value: string) =>
-    value.startsWith('~/')
-      ? path.join(homeDir, value.slice(2))
-      : path.resolve(projectDirectoryAbsolutePath, value);
+    path.resolve(projectDirectoryAbsolutePath, value);
 
   const project = projectSchema.parse(
     toml.parse(await Deno.readTextFile(projectFileAbsolutePath)),
@@ -58,16 +55,7 @@ export async function runBuild(
     });
   }
 
-  const homeDir = Deno.env.get('HOME') ?? '';
-
-  const fonts: Font[] = await Promise.all(
-    project.fonts.map(async (font) => ({
-      name: font.name,
-      data: await Deno.readFile(resolvePathInProjectFile(font.path)),
-      weight: font.weight ?? 400,
-      style: font.style ?? 'normal',
-    })),
-  );
+  const fonts = await readFontsForSatori(project.activated_fonts);
 
   for (const targetConfig of project.targets) {
     const table = tableByName.get(targetConfig.table);

@@ -1,3 +1,5 @@
+activated_fonts = ["Roboto"]
+
 [[targets]]
 name = "card_front"
 table = "card"
@@ -25,15 +27,3 @@ name = "card_back"
 path = "./card_back.ejs"
 width = "63mm"
 height = "88mm"
-
-[[fonts]]
-name = "Roboto"
-path = "~/Library/Fonts/Roboto-Regular.ttf"
-weight = 400
-style = "normal"
-
-[[fonts]]
-name = "Roboto"
-path = "~/Library/Fonts/Roboto-Bold.ttf"
-weight = 700
-style = "normal"

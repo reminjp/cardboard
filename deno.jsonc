@@ -11,7 +11,7 @@
     "zod": "https://deno.land/x/zod@v3.21.4/mod.ts"
   },
   "tasks": {
-    "run": "deno run --allow-env --allow-read --allow-write mod.ts build --cwd examples/card_game"
+    "run": "deno run --allow-env --allow-read --allow-run --allow-write mod.ts build --cwd examples/card_game"
   },
   "fmt": {
     "singleQuote": true
