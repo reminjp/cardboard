@@ -1,12 +1,12 @@
 import { z } from 'zod';
 
 // TODO
-const lengthSchema = z.string().min(0);
-const nameSchema = z.string().min(0);
-const pathSchema = z.string().min(0);
+const lengthSchema = z.string().min(1);
+const nameSchema = z.string().min(1);
+const pathSchema = z.string().min(1);
 
 export const projectSchema = z.object({
-  activated_fonts: z.array(z.string().min(0)),
+  activated_fonts: z.array(z.string().min(1)),
   targets: z.array(
     z.object({
       name: nameSchema,
@@ -16,10 +16,19 @@ export const projectSchema = z.object({
     }),
   ),
   tables: z.array(
-    z.object({
-      name: nameSchema,
-      path: pathSchema,
-    }),
+    z.discriminatedUnion('type', [
+      z.object({
+        name: nameSchema,
+        type: z.undefined(),
+        path: pathSchema,
+      }),
+      z.object({
+        name: nameSchema,
+        type: z.literal('google_sheets'),
+        spreadsheet_id: z.string().min(1),
+        sheet_id: z.number().int().nonnegative(),
+      }),
+    ]),
   ),
   templates: z.array(
     z.object({
@@ -30,3 +39,5 @@ export const projectSchema = z.object({
     }),
   ),
 });
+
+export const googleSheetSchema = z.array(z.array(z.string()));

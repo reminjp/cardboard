@@ -9,6 +9,12 @@ import { projectSchema } from './schemas.ts';
 import { Table, Template } from './core/types.ts';
 import { postProcess } from './core/postProcess.ts';
 import { readFontsForSatori } from './core/utils/font.ts';
+import {
+  convertGoogleSheetToObjectArray,
+  getGoogleSheet,
+  getGoogleSheetNameById,
+  initializeGoogle,
+} from './infrastructures/google.ts';
 
 export async function runBuild(
   projectDirectoryPath: string | undefined,
@@ -35,10 +41,24 @@ export async function runBuild(
   // TODO: Skip unused tables and templates.
   const tableByName = new Map<string, Table>();
   for (const tableConfig of project.tables) {
-    const tableCsvAbsolutePath = resolvePathInProjectFile(tableConfig.path);
-    const tableCsv = await Deno.readTextFile(tableCsvAbsolutePath);
-    const table = csv.parse(tableCsv, { skipFirstRow: true });
-    tableByName.set(tableConfig.name, table);
+    if (tableConfig.type === 'google_sheets') {
+      await initializeGoogle();
+      const sheetName = await getGoogleSheetNameById(
+        tableConfig.spreadsheet_id,
+        tableConfig.sheet_id,
+      );
+      const sheet = await getGoogleSheet(
+        tableConfig.spreadsheet_id,
+        sheetName,
+      );
+      const table = convertGoogleSheetToObjectArray(sheet);
+      tableByName.set(tableConfig.name, table);
+    } else {
+      const tableCsvAbsolutePath = resolvePathInProjectFile(tableConfig.path);
+      const tableCsv = await Deno.readTextFile(tableCsvAbsolutePath);
+      const table = csv.parse(tableCsv, { skipFirstRow: true });
+      tableByName.set(tableConfig.name, table);
+    }
   }
 
   const templateByName = new Map<string, Template>();

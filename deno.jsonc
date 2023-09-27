@@ -3,6 +3,7 @@
     "@types/svg-parser": "npm:@types/svg-parser@2.0.3",
     "cliffy/": "https://deno.land/x/cliffy@v1.0.0-rc.3/",
     "ejs": "npm:ejs@3.1.9",
+    "googleapis": "npm:googleapis@126.0.1",
     "pdf-lib": "https://cdn.skypack.dev/pdf-lib@1.17.1?dts",
     "satori-html": "npm:satori-html@0.3.2",
     "satori": "npm:satori@0.10.2",

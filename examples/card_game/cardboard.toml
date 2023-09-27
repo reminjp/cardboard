@@ -16,6 +16,12 @@ bleed = "3mm"
 name = "card"
 path = "./card.csv"
 
+# [[tables]]
+# name = "card"
+# type = "google_sheets"
+# spreadsheet_id = "********************************************"
+# sheet_id = 0
+
 [[templates]]
 name = "card_front"
 path = "./card_front.ejs"
