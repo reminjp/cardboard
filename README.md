@@ -1,8 +1,13 @@
 # Cardboard
 
-A command line tool to generate cards.
+**This tool is still experimental.
+Not ready to accept feature requests and pull requests.**
 
-It reads a card design template (EJS) and tabular data (CSV or Google Sheets) and generates cards for printing (PDF).
+A command line tool to generate cards.
+It reads a card design template (EJS) and tabular data (CSV or Google Sheets) and outputs documents for desktop publishing (PDF).
+
+カードを生成するコマンドラインツール。
+カードデザインのテンプレート（EJS）と表形式のデータ（CSVまたはGoogleスプレッドシート）を読み込んで印刷用の原稿（PDF）を出力します。
 
 ## Usage
 
@@ -68,11 +73,6 @@ For example, you can specify a locale via the `lang` attribute:
 ```html
 <div lang="ja-JP">海角骨刃直入</div>
 ```
-
-## Contribution
-
-This tool is still experimental.
-Not ready to accept feature requests and pull requests.
 
 ## Author
 
