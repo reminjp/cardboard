@@ -9,35 +9,36 @@ It reads a card design template (EJS) and tabular data (CSV or Google Sheets) an
 カードを生成するコマンドラインツール。
 カードデザインのテンプレート（EJS）と表形式のデータ（CSVまたはGoogleスプレッドシート）を読み込んで印刷用の原稿（PDF）を出力します。
 
-## Usage
+## Installation
 
-Install requirements.
+Requirements:
 
 - [Deno](https://deno.com/)
 - fontconfig (`fc-list` command)
 
-Install the tool using [`deno install`](https://deno.land/manual/tools/script_installer).
-(Run `deno uninstall` command to uninstall.)
+Install:
 
 ```sh
-deno install --allow-env --allow-net --allow-read --allow-run --allow-write --name cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
+deno install --allow-env --allow-net --allow-read --allow-run --allow-write --force --name cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
 ```
 
-Create `cardboard.toml` and other resources (see below).
-
-Navigate to the root directory of your project.
+Install (shortened):
 
 ```sh
-cd /path/to/package
+deno install -Af -n cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
 ```
 
-Run the build command.
+## Usage
+
+Create a project root directory.
+Place `cardboard.toml` and other resources in there.
+Run `build` command in the project root directory:
 
 ```sh
 cardboard build
 ```
 
-### Example projects
+### Examples
 
 - [Card game](./examples/card_game)
 
@@ -45,8 +46,25 @@ cardboard build
 
 #### cardboard.toml
 
-A `cardboard.toml` is a Cardboard project file.
-It specifies references to tables and templates.
+**`cardboard.toml`** is a Cardboard project file.
+It defines build **targets**, which specify references to **tables** and **templates**:
+
+```toml
+[[targets]]
+name = "card_front"
+table = "card"
+template = "card_front"
+
+[[tables]]
+name = "card"
+path = "./card.csv"
+
+[[templates]]
+name = "card_front"
+path = "./card_front.ejs"
+width = "63mm"
+height = "88mm"
+```
 
 #### Tables
 
