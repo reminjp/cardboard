@@ -8,6 +8,7 @@ const TRIM_MARK_WIDTH_PT = 0.3;
 
 interface PostProcessInput {
   compileResult: CompileResult;
+  isBack: boolean;
   isPrintAndPlay: boolean;
   pdfBytes: Uint8Array;
 }
@@ -49,7 +50,8 @@ export async function postProcess(
 
         pdfPage.drawPage(pdfEmbeddedPages[cardIndex], {
           x: (mediaWidthPt - columnCount * cardWidthPt) / 2 +
-            columnIndex * cardWidthPt,
+            (input.isBack ? (columnCount - columnIndex - 1) : columnIndex) *
+              cardWidthPt,
           y: (mediaHeightPt - rowCount * cardHeightPt) / 2 +
             (rowCount - rowIndex - 1) * cardHeightPt,
           width: cardWidthPt,

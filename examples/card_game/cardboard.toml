@@ -11,6 +11,7 @@ name = "card_back"
 table = "card"
 template = "card_back"
 bleed = "3mm"
+print_and_play.is_back = true
 
 [[tables]]
 name = "card"

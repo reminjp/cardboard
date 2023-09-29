@@ -101,7 +101,12 @@ export async function runBuild(
 
     let pdfBytes = await render({ compileResult });
 
-    pdfBytes = await postProcess({ isPrintAndPlay, pdfBytes, compileResult });
+    pdfBytes = await postProcess({
+      isBack: targetConfig.print_and_play?.is_back ?? false,
+      isPrintAndPlay,
+      pdfBytes,
+      compileResult,
+    });
 
     /*
      * Write PDF.

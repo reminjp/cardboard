@@ -13,6 +13,9 @@ export const projectSchema = z.object({
       table: nameSchema,
       template: nameSchema,
       bleed: lengthSchema,
+      print_and_play: z.object({
+        is_back: z.boolean().optional(),
+      }).optional(),
     }),
   ),
   tables: z.array(
