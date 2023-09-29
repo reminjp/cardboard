@@ -37,7 +37,9 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
   const imageAbsolutePathToIndex = new Map<string, number>();
 
   for (const record of input.table) {
-    const cardHtmlAst = satoriHtml(ejs.render(input.template.ejs, record));
+    const cardHtmlAst = satoriHtml(
+      ejs.render(input.template.ejs, { data: record }),
+    );
 
     transformHtmlAstInPlace(
       {
