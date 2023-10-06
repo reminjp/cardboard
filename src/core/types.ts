@@ -1,4 +1,4 @@
-import type { Font } from 'satori';
+import type { Font } from '../../deps.ts';
 import { Color } from './utils/color.ts';
 import { Length } from './utils/length.ts';
 

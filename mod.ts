@@ -1,7 +1,7 @@
-import { load } from 'std/dotenv/mod.ts';
+import { dotenv } from './deps.ts';
 import { cli } from './src/cli.ts';
 
 if (import.meta.main) {
-  await load({ export: true });
+  await dotenv.load({ export: true });
   cli.parse();
 }

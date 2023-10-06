@@ -1,5 +1,5 @@
-import type { Font } from 'satori';
-import { groupBy } from 'std/collections/group_by.ts';
+import { groupBy } from '../../../deps.ts';
+import type { Font } from '../../../deps.ts';
 
 export async function readFontsForSatori(
   familyNames: string[],

@@ -1,4 +1,4 @@
-import * as log from 'std/log/mod.ts';
+import { log } from '../deps.ts';
 
 log.setup({});
 

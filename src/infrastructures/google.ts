@@ -1,6 +1,5 @@
-import type { sheets_v4 } from 'googleapis';
-import { google } from 'googleapis';
-
+import { google } from '../../deps.ts';
+import type { sheets_v4 } from '../../deps.ts';
 import { googleSheetSchema } from '../schemas.ts';
 import { getRequiredEnv } from './env.ts';
 

@@ -1,4 +1,4 @@
-import { Command } from 'cliffy/command/mod.ts';
+import { Command } from '../deps.ts';
 import { runBuild } from './build.ts';
 
 const build = new Command<{ cwd?: string }>()

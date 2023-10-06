@@ -1,5 +1,5 @@
-import { cmyk, PDFDocument, PDFPage, rgb } from 'pdf-lib';
-import type { Color as PdfLibColor } from 'pdf-lib';
+import { cmyk, PDFDocument, PDFPage, rgb } from '../../deps.ts';
+import type { PdfLibColor } from '../../deps.ts';
 
 import { Length } from './utils/length.ts';
 import { CardAstNode, CompileResult } from './types.ts';

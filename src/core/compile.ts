@@ -1,13 +1,5 @@
-import * as base64 from 'std/encoding/base64.ts';
-import * as path from 'std/path/mod.ts';
-
-import ejs from 'ejs';
-import { html as satoriHtml } from 'satori-html';
-import satori from 'satori';
-import type { Font } from 'satori';
-// @deno-types='@types/svg-parser'
-import { parse as parseSvg } from 'svg-parser';
-import type { Node, RootNode } from 'svg-parser';
+import { base64, parseSvg, path, satori } from '../../deps.ts';
+import type { Font, Node, RootNode } from '../../deps.ts';
 import { Length, replaceAllSupportedLengthToIpx } from './utils/length.ts';
 import {
   PLACEHOLDER_SVG_PREFIX,
@@ -16,6 +8,7 @@ import {
 } from './constants.ts';
 import { CardAstNode, CompileResult, Table, Template } from './types.ts';
 import { Color } from './utils/color.ts';
+import { ejs, satoriHtml } from '../../deps.ts';
 
 interface CompileInput {
   bleed: Length;

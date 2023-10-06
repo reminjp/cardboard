@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from '../deps.ts';
 
 // TODO
 const lengthSchema = z.string().min(1);

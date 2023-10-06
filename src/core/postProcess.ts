@@ -1,4 +1,4 @@
-import { cmyk, PDFDocument } from 'pdf-lib';
+import { cmyk, PDFDocument } from '../../deps.ts';
 import { CompileResult } from './types.ts';
 import { Length } from './utils/length.ts';
 

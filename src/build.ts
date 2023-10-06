@@ -1,7 +1,3 @@
-import * as csv from 'std/csv/mod.ts';
-import * as path from 'std/path/mod.ts';
-import * as toml from 'std/toml/mod.ts';
-
 import { compile } from './core/compile.ts';
 import { render } from './core/render.ts';
 import { Length } from './core/utils/length.ts';
@@ -15,6 +11,7 @@ import {
   getGoogleSheetNameById,
   initializeGoogle,
 } from './infrastructures/google.ts';
+import { csv, path, toml } from '../deps.ts';
 
 export async function runBuild(
   projectDirectoryPath: string | undefined,
