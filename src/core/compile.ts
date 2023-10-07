@@ -31,7 +31,7 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
 
   for (const record of input.table) {
     const cardHtmlAst = satoriHtml(
-      ejs.render(input.template.ejs, { data: record }),
+      ejs.render(input.template.ejs, { record }),
     );
 
     transformHtmlAstInPlace(

@@ -72,16 +72,16 @@ export async function getGoogleSheetNameById(
 export function convertGoogleSheetToObjectArray(
   sheet: string[][],
 ): Record<string, string>[] {
-  const [columnNames, ...rest] = sheet;
-  if (!columnNames) return [];
+  const [fieldNames, ...rest] = sheet;
+  if (!fieldNames) return [];
 
   return rest.map((array) => {
     const record: Record<string, string> = {};
 
     for (const [index, value] of array.entries()) {
-      const columnName = columnNames[index];
-      if (!columnName) continue;
-      record[columnName] = value;
+      const fieldName = fieldNames[index];
+      if (!fieldName) continue;
+      record[fieldName] = value;
     }
 
     return record;
