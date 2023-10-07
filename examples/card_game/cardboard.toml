@@ -16,6 +16,7 @@ print_and_play.is_back = true
 [[tables]]
 name = "card"
 path = "./card.csv"
+include_record_if = "record.name.length > 0"
 
 # [[tables]]
 # name = "card"

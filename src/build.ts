@@ -38,6 +38,8 @@ export async function runBuild(
   // TODO: Skip unused tables and templates.
   const tableByName = new Map<string, Table>();
   for (const tableConfig of project.tables) {
+    let table: Table | undefined;
+
     if (tableConfig.type === 'google_sheets') {
       await initializeGoogle();
       const sheetName = await getGoogleSheetNameById(
@@ -48,14 +50,22 @@ export async function runBuild(
         tableConfig.spreadsheet_id,
         sheetName,
       );
-      const table = convertGoogleSheetToObjectArray(sheet);
-      tableByName.set(tableConfig.name, table);
+      table = convertGoogleSheetToObjectArray(sheet);
     } else {
       const tableCsvAbsolutePath = resolvePathInProjectFile(tableConfig.path);
       const tableCsv = await Deno.readTextFile(tableCsvAbsolutePath);
-      const table = csv.parse(tableCsv, { skipFirstRow: true });
-      tableByName.set(tableConfig.name, table);
+      table = csv.parse(tableCsv, { skipFirstRow: true });
     }
+
+    if (tableConfig.include_record_if) {
+      const f = new Function(
+        'record',
+        `return ${tableConfig.include_record_if};`,
+      );
+      table = table.filter((record) => f.call({}, record));
+    }
+
+    tableByName.set(tableConfig.name, table);
   }
 
   const templateByName = new Map<string, Template>();
