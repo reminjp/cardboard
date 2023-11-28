@@ -5,6 +5,7 @@ name = "card_front"
 table = "card"
 template = "card_front"
 bleed = "3mm"
+print_and_play.repeat_record_for = "record.repeats || 1"
 
 [[targets]]
 name = "card_back"
@@ -12,6 +13,7 @@ table = "card"
 template = "card_back"
 bleed = "3mm"
 print_and_play.is_back = true
+print_and_play.repeat_record_for = "record.repeats || 1"
 
 [[tables]]
 name = "card"

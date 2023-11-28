@@ -62,7 +62,7 @@ export async function runBuild(
         'record',
         `return ${tableConfig.include_record_if};`,
       );
-      table = table.filter((record) => f.call({}, record));
+      table = table.filter((record) => f.call({}, { ...record }));
     }
 
     tableByName.set(tableConfig.name, table);
@@ -85,9 +85,19 @@ export async function runBuild(
   const fonts = await readFontsForSatori(project.activated_fonts);
 
   for (const targetConfig of project.targets) {
-    const table = tableByName.get(targetConfig.table);
+    let table = tableByName.get(targetConfig.table);
     if (!table) {
       throw new Error(`Undefined table: ${targetConfig.table}`);
+    }
+    if (isPrintAndPlay && targetConfig.print_and_play?.repeat_record_for) {
+      const f = new Function(
+        'record',
+        `return ${targetConfig.print_and_play.repeat_record_for};`,
+      );
+      table = table.flatMap((record) => {
+        const repeatCount = Number(f.call({}, { ...record })) || 0;
+        return Array.from({ length: repeatCount }).map(() => record);
+      });
     }
 
     const template = templateByName.get(targetConfig.template);

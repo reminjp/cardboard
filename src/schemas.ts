@@ -20,6 +20,7 @@ export const projectSchema = z.object({
       bleed: lengthSchema,
       print_and_play: z.object({
         is_back: z.boolean().optional(),
+        repeat_record_for: z.string().min(1).optional(),
       }).optional(),
     }),
   ),
