@@ -75,6 +75,8 @@ function transformHtmlAstInPlace(
   context: TransformHtmlAstInPlaceContext,
   node: ReturnType<typeof satoriHtml>,
 ): void {
+  if (!node.props) return;
+
   // Convert length units not supported by Satori (e.g. `mm`) to `px`.
   for (const [key, value] of Object.entries(node.props)) {
     if (key === 'children' || key === 'style') continue;
