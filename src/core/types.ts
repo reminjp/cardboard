@@ -1,14 +1,15 @@
-import type { ComponentType, Font } from '../../deps.ts';
+import type { Font, satoriHtml } from '../../deps.ts';
 import { Color } from './utils/color.ts';
 import { Length } from './utils/length.ts';
 
-export type Table = Record<string, string | undefined>[];
+type TableRecord = Record<string, string | undefined>;
+export type Table = TableRecord[];
 
 export interface Template {
   absolutePath: string;
-  component: ComponentType<{ record: Record<string, string | undefined> }>;
   width: Length;
   height: Length;
+  render: (record: TableRecord) => ReturnType<typeof satoriHtml>;
 }
 
 export interface CompileResult {

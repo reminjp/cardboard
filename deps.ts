@@ -22,6 +22,4 @@ export { groupBy } from 'https://deno.land/std@0.197.0/collections/group_by.ts';
 export { parse as parseSvg } from 'npm:svg-parser@2.0.4';
 export type { Node, RootNode } from 'npm:svg-parser@2.0.4';
 export { z } from 'https://deno.land/x/zod@v3.21.4/mod.ts';
-export { createElement } from 'https://esm.sh/react@18.2.0';
-export type { ComponentType } from 'https://esm.sh/react@18.2.0';
-export { renderToString } from 'https://esm.sh/react-dom@18.2.0/server';
+export { bundle } from 'https://deno.land/x/emit@0.32.0/mod.ts';

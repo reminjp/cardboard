@@ -8,7 +8,7 @@ import {
 } from './constants.ts';
 import { CardAstNode, CompileResult, Table, Template } from './types.ts';
 import { Color } from './utils/color.ts';
-import { createElement, renderToString, satoriHtml } from '../../deps.ts';
+import { satoriHtml } from '../../deps.ts';
 
 interface CompileInput {
   bleed: Length;
@@ -30,9 +30,7 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
   const imageAbsolutePathToIndex = new Map<string, number>();
 
   for (const record of input.table) {
-    const cardHtmlAst = satoriHtml(
-      renderToString(createElement(input.template.component, { record })),
-    );
+    const cardHtmlAst = input.template.render(record);
 
     transformHtmlAstInPlace(
       {
