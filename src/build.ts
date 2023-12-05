@@ -73,7 +73,9 @@ export async function runBuild(
     const templatejsxAbsolutePath = resolvePathInProjectFile(
       templateConfig.path,
     );
-    const component = (await import(templatejsxAbsolutePath)).default;
+    const component =
+      (await import(path.toFileUrl(templatejsxAbsolutePath).toString()))
+        .default;
     templateByName.set(templateConfig.name, {
       absolutePath: templatejsxAbsolutePath,
       component,
