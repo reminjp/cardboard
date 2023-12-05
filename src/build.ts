@@ -70,13 +70,13 @@ export async function runBuild(
 
   const templateByName = new Map<string, Template>();
   for (const templateConfig of project.templates) {
-    const templateEjsAbsolutePath = resolvePathInProjectFile(
+    const templatejsxAbsolutePath = resolvePathInProjectFile(
       templateConfig.path,
     );
-    const templateEjs = await Deno.readTextFile(templateEjsAbsolutePath);
+    const component = (await import(templatejsxAbsolutePath)).default;
     templateByName.set(templateConfig.name, {
-      absolutePath: templateEjsAbsolutePath,
-      ejs: templateEjs,
+      absolutePath: templatejsxAbsolutePath,
+      component,
       width: Length.from(templateConfig.width),
       height: Length.from(templateConfig.height),
     });

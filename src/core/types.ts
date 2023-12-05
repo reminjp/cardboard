@@ -1,4 +1,4 @@
-import type { Font } from '../../deps.ts';
+import type { ComponentType, Font } from '../../deps.ts';
 import { Color } from './utils/color.ts';
 import { Length } from './utils/length.ts';
 
@@ -6,7 +6,7 @@ export type Table = Record<string, string | undefined>[];
 
 export interface Template {
   absolutePath: string;
-  ejs: string;
+  component: ComponentType<{ record: Record<string, string | undefined> }>;
   width: Length;
   height: Length;
 }

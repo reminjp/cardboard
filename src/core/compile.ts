@@ -8,7 +8,7 @@ import {
 } from './constants.ts';
 import { CardAstNode, CompileResult, Table, Template } from './types.ts';
 import { Color } from './utils/color.ts';
-import { ejs, satoriHtml } from '../../deps.ts';
+import { createElement, renderToString, satoriHtml } from '../../deps.ts';
 
 interface CompileInput {
   bleed: Length;
@@ -31,7 +31,7 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
 
   for (const record of input.table) {
     const cardHtmlAst = satoriHtml(
-      ejs.render(input.template.ejs, { record }),
+      renderToString(createElement(input.template.component, { record })),
     );
 
     transformHtmlAstInPlace(

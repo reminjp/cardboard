@@ -1,5 +1,4 @@
 export { Command } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts';
-export * as ejs from 'npm:ejs@3.1.9';
 export type { sheets_v4 } from 'npm:googleapis@126.0.1';
 export { google } from 'npm:googleapis@126.0.1';
 export {
@@ -23,3 +22,6 @@ export { groupBy } from 'https://deno.land/std@0.197.0/collections/group_by.ts';
 export { parse as parseSvg } from 'npm:svg-parser@2.0.4';
 export type { Node, RootNode } from 'npm:svg-parser@2.0.4';
 export { z } from 'https://deno.land/x/zod@v3.21.4/mod.ts';
+export { createElement } from 'https://esm.sh/react@18.2.0';
+export type { ComponentType } from 'https://esm.sh/react@18.2.0';
+export { renderToString } from 'https://esm.sh/react-dom@18.2.0/server';
