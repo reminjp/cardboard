@@ -1,5 +1,4 @@
 export { Command } from 'https://deno.land/x/cliffy@v1.0.0-rc.3/command/mod.ts';
-export * as ejs from 'npm:ejs@3.1.9';
 export type { sheets_v4 } from 'npm:googleapis@126.0.1';
 export { google } from 'npm:googleapis@126.0.1';
 export {
@@ -9,7 +8,6 @@ export {
   rgb,
 } from 'https://cdn.skypack.dev/pdf-lib@1.17.1?dts';
 export type { Color as PdfLibColor } from 'https://cdn.skypack.dev/pdf-lib@1.17.1?dts';
-export { html as satoriHtml } from 'npm:satori-html@0.3.2';
 export { default as satori } from 'npm:satori@0.10.2';
 export type { Font } from 'npm:satori@0.10.2';
 export * as dotenv from 'https://deno.land/std@0.197.0/dotenv/mod.ts';
@@ -23,3 +21,4 @@ export { groupBy } from 'https://deno.land/std@0.197.0/collections/group_by.ts';
 export { parse as parseSvg } from 'npm:svg-parser@2.0.4';
 export type { Node, RootNode } from 'npm:svg-parser@2.0.4';
 export { z } from 'https://deno.land/x/zod@v3.21.4/mod.ts';
+export { bundle } from 'https://deno.land/x/emit@0.32.0/mod.ts';

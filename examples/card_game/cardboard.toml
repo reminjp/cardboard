@@ -28,12 +28,12 @@ include_record_if = "record.name.length > 0"
 
 [[templates]]
 name = "card_front"
-path = "./card_front.ejs"
+path = "./card_front.jsx"
 width = "63mm"
 height = "88mm"
 
 [[templates]]
 name = "card_back"
-path = "./card_back.ejs"
+path = "./card_back.jsx"
 width = "63mm"
 height = "88mm"

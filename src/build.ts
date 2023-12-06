@@ -12,6 +12,7 @@ import {
   initializeGoogle,
 } from './infrastructures/google.ts';
 import { csv, path, toml } from '../deps.ts';
+import { buildTemplateJsx } from './core/utils/jsx.ts';
 
 export async function runBuild(
   projectDirectoryPath: string | undefined,
@@ -70,15 +71,19 @@ export async function runBuild(
 
   const templateByName = new Map<string, Template>();
   for (const templateConfig of project.templates) {
-    const templateEjsAbsolutePath = resolvePathInProjectFile(
+    const templatejsxAbsolutePath = resolvePathInProjectFile(
       templateConfig.path,
     );
-    const templateEjs = await Deno.readTextFile(templateEjsAbsolutePath);
+    const templateJsx = await Deno.readTextFile(templatejsxAbsolutePath);
+
     templateByName.set(templateConfig.name, {
-      absolutePath: templateEjsAbsolutePath,
-      ejs: templateEjs,
+      absolutePath: templatejsxAbsolutePath,
       width: Length.from(templateConfig.width),
       height: Length.from(templateConfig.height),
+      renderHtmlAst: await buildTemplateJsx(
+        templatejsxAbsolutePath,
+        templateJsx,
+      ),
     });
   }
 

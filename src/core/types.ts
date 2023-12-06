@@ -1,14 +1,17 @@
-import type { Font } from '../../deps.ts';
+import type { Font, satori } from '../../deps.ts';
 import { Color } from './utils/color.ts';
 import { Length } from './utils/length.ts';
 
-export type Table = Record<string, string | undefined>[];
+type TableRecord = Record<string, string | undefined>;
+export type Table = TableRecord[];
+
+export type ReactNode = Parameters<typeof satori>[0];
 
 export interface Template {
   absolutePath: string;
-  ejs: string;
   width: Length;
   height: Length;
+  renderHtmlAst: (record: TableRecord) => ReactNode;
 }
 
 export interface CompileResult {
