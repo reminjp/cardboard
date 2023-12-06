@@ -4,10 +4,10 @@
 Not ready to accept feature requests and pull requests.**
 
 A command line tool to generate cards.
-It reads a card design template (EJS) and tabular data (CSV or Google Sheets) and outputs documents for desktop publishing (PDF).
+It reads a card design template (JSX) and tabular data (CSV or Google Sheets) and outputs documents for desktop publishing (PDF).
 
 カードを生成するコマンドラインツール。
-カードデザインのテンプレート（EJS）と表形式のデータ（CSVまたはGoogleスプレッドシート）を読み込んで印刷用の原稿（PDF）を出力します。
+カードデザインのテンプレート（JSX）と表形式のデータ（CSVまたはGoogleスプレッドシート）を読み込んで印刷用の原稿（PDF）を出力します。
 
 ## Installation
 
@@ -61,7 +61,7 @@ path = "./card.csv"
 
 [[templates]]
 name = "card_front"
-path = "./card_front.ejs"
+path = "./card_front.jsx"
 width = "63mm"
 height = "88mm"
 ```
@@ -73,7 +73,7 @@ This tool accepts a CSV file or a reference to Google Sheets as an input source.
 
 #### Templates
 
-A template is an EJS file that designs one type of card.
+A template is an JSX file that designs one type of card.
 It supports a limited subset of HTML and CSS features.
 
 - Layout
@@ -82,7 +82,7 @@ It supports a limited subset of HTML and CSS features.
   - CMYK (`cmyk(0% 0% 0% 100%)`)
   - RGB (`#000000`)
 - Image
-  - PDF (`<img src="image.pdf" style="width: 10mm; height: 10mm"/>`)
+  - PDF (`<img src="image.pdf" style={{ width: '10mm', height: '10mm' }}/>`)
 
 This tool uses [Satori](https://github.com/vercel/satori) internally to convert HTML to intermediate SVG.
 Its documentation may be helpful for troubleshooting.
