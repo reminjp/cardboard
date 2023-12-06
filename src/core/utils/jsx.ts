@@ -1,45 +1,14 @@
 import { Template } from '../types.ts';
 import { bundle, path } from '../../../deps.ts';
 
-export async function buildTemplateJsx(
-  absolutePath: string,
-  data: string,
-): Promise<Template['renderHtmlAst']> {
-  const rootModuleUrl = path.toFileUrl(path.join(
-    path.dirname(absolutePath),
-    `${crypto.randomUUID()}.jsx`,
-  )).toString();
-  const templateModuleUrl = path.toFileUrl(absolutePath).toString();
+const BUNDLE_LOAD_RESPONSE_HEADERS = {
+  'content-type': 'application/javascript; charset=utf-8',
+} as const;
 
-  const bundleResult = await bundle(rootModuleUrl, {
-    compilerOptions: {
-      jsxFactory: '_jsx',
-      jsxFragmentFactory: '_Fragment',
-    },
-    load(specifier) {
-      if (specifier === rootModuleUrl) {
-        return Promise.resolve({
-          kind: 'module',
-          specifier,
-          content:
-            `import { default as t } from '${templateModuleUrl}';console.log(t);`,
-          headers: { 'content-type': 'application/javascript; charset=utf-8' },
-        });
-      }
-      if (specifier === templateModuleUrl) {
-        return Promise.resolve({
-          kind: 'module',
-          specifier,
-          content: data,
-          headers: { 'content-type': 'application/javascript; charset=utf-8' },
-        });
-      }
-      throw new Error(`Unexpected specifier: ${specifier}`);
-    },
-  });
+const JSX_RUNTIME_MODULE_CONTENT =
+  `export const _Fragment = Symbol.for('react.fragment');
 
-  const functionBody = `const _Fragment = Symbol.for('react.fragment');
-function _jsx(type, props, ...children) {
+export function _jsx(type, props, ...children) {
   const newChildren = [];
   for (const child of children) {
     if (!child) continue;
@@ -51,14 +20,69 @@ function _jsx(type, props, ...children) {
   }
   return { type, props: { ...props, children: newChildren } };
 }
-${
-    bundleResult.code.replaceAll(
-      /console\.log\(([\w\$-]+)\);/g,
-      (_, componentName) =>
-        `return _jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, ${componentName}({ record }));`,
-    )
-  }
 `;
+
+export async function buildTemplateJsx(
+  absolutePath: string,
+  data: string,
+): Promise<Template['renderHtmlAst']> {
+  const templateModuleUrl = path.toFileUrl(absolutePath).toString();
+
+  const rootModuleUrl = path.toFileUrl(path.join(
+    path.dirname(absolutePath),
+    `${crypto.randomUUID()}.jsx`,
+  )).toString();
+  const jsxRuntimeModuleUrl = path.toFileUrl(path.join(
+    path.dirname(absolutePath),
+    `${crypto.randomUUID()}.jsx`,
+  )).toString();
+
+  const bundleResult = await bundle(rootModuleUrl, {
+    compilerOptions: {
+      jsxFactory: '_jsx',
+      jsxFragmentFactory: '_Fragment',
+    },
+    load(specifier) {
+      switch (specifier) {
+        case rootModuleUrl: {
+          return Promise.resolve({
+            kind: 'module',
+            specifier,
+            content: `import { _jsx, _Fragment } from '${jsxRuntimeModuleUrl}';
+import { default as t } from '${templateModuleUrl}';
+console.log(_jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, t({ record })));`,
+            headers: BUNDLE_LOAD_RESPONSE_HEADERS,
+          });
+        }
+        case jsxRuntimeModuleUrl: {
+          return Promise.resolve({
+            kind: 'module',
+            specifier,
+            content: JSX_RUNTIME_MODULE_CONTENT,
+            headers: BUNDLE_LOAD_RESPONSE_HEADERS,
+          });
+        }
+        case templateModuleUrl: {
+          return Promise.resolve({
+            kind: 'module',
+            specifier,
+            content:
+              `import { _jsx, _Fragment } from '${jsxRuntimeModuleUrl}';\n${data}`,
+            headers: BUNDLE_LOAD_RESPONSE_HEADERS,
+          });
+        }
+        default: {
+          throw new Error(`Unexpected specifier: ${specifier}`);
+        }
+      }
+    },
+    minify: true,
+  });
+
+  const functionBody = bundleResult.code.replaceAll(
+    /console\.log\(([\s\S]+)\);/g,
+    (_, expression) => `return ${expression};`,
+  );
 
   const f = new Function('record', functionBody);
 
