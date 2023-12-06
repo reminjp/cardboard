@@ -1,4 +1,4 @@
-export default function Template({ record }) {
+export default function CardFront({ record }) {
   return (
     <>
       <img
@@ -58,7 +58,11 @@ export default function Template({ record }) {
             fontSize: '4mm',
           }}
         >
-          {record.description.replaceAll('\\n', '')}
+          {record.description.split('\\n').map((s, i) => (
+            <div key={i} style={{ display: 'flex' }}>
+              {s}
+            </div>
+          ))}
         </div>
       </div>
     </>

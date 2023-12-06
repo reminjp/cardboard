@@ -11,7 +11,8 @@ import {
   getGoogleSheetNameById,
   initializeGoogle,
 } from './infrastructures/google.ts';
-import { bundle, csv, path, toml } from '../deps.ts';
+import { csv, path, toml } from '../deps.ts';
+import { buildTemplateJsx } from './core/utils/jsx.ts';
 
 export async function runBuild(
   projectDirectoryPath: string | undefined,
@@ -73,63 +74,16 @@ export async function runBuild(
     const templatejsxAbsolutePath = resolvePathInProjectFile(
       templateConfig.path,
     );
-    const templateJsxUrl = path.toFileUrl(templatejsxAbsolutePath).toString();
     const templateJsx = await Deno.readTextFile(templatejsxAbsolutePath);
-
-    const indexJsxAbsolutePath = path.join(
-      path.dirname(templatejsxAbsolutePath),
-      `${crypto.randomUUID()}.jsx`,
-    );
-    const indexJsxUrl = path.toFileUrl(indexJsxAbsolutePath).toString();
-
-    const bundleResult = await bundle(indexJsxUrl, {
-      compilerOptions: {
-        jsxFactory: '_jsx',
-        jsxFragmentFactory: '_Fragment',
-      },
-      load(specifier) {
-        if (specifier === indexJsxUrl) {
-          return Promise.resolve({
-            kind: 'module',
-            specifier,
-            content:
-              `import { default as Template } from '${templateJsxUrl}';\nconsole.log(Template);`,
-            headers: {
-              'content-type': 'application/javascript; charset=utf-8',
-            },
-          });
-        }
-        if (specifier === templateJsxUrl) {
-          return Promise.resolve({
-            kind: 'module',
-            specifier,
-            content: templateJsx,
-            headers: {
-              'content-type': 'application/javascript; charset=utf-8',
-            },
-          });
-        }
-        throw new Error(`Unexpected specifier: ${specifier}`);
-      },
-    });
 
     templateByName.set(templateConfig.name, {
       absolutePath: templatejsxAbsolutePath,
       width: Length.from(templateConfig.width),
       height: Length.from(templateConfig.height),
-      render: (record) => {
-        const f = new Function(
-          'record',
-          `const _Fragment = '';
-function _jsx(type, props, ...children) {
-  return { type, props: { ...props, children } };
-}
-${bundleResult.code.replaceAll('console.log(Template);', '')}
-return Template({ record });
-`,
-        );
-        return f.call({}, { ...record });
-      },
+      renderHtmlAst: await buildTemplateJsx(
+        templatejsxAbsolutePath,
+        templateJsx,
+      ),
     });
   }
 

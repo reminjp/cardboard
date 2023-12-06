@@ -6,9 +6,14 @@ import {
   PLACEHOLDER_SVG_SUFFIX,
   SVG_DATA_URI_PREFIX,
 } from './constants.ts';
-import { CardAstNode, CompileResult, Table, Template } from './types.ts';
+import {
+  CardAstNode,
+  CompileResult,
+  ReactNode,
+  Table,
+  Template,
+} from './types.ts';
 import { Color } from './utils/color.ts';
-import { satoriHtml } from '../../deps.ts';
 
 interface CompileInput {
   bleed: Length;
@@ -30,7 +35,7 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
   const imageAbsolutePathToIndex = new Map<string, number>();
 
   for (const record of input.table) {
-    const cardHtmlAst = input.template.render(record);
+    const cardHtmlAst = input.template.renderHtmlAst(record);
 
     transformHtmlAstInPlace(
       {
@@ -71,7 +76,7 @@ interface TransformHtmlAstInPlaceContext {
 
 function transformHtmlAstInPlace(
   context: TransformHtmlAstInPlaceContext,
-  node: ReturnType<typeof satoriHtml>,
+  node: ReactNode,
 ): void {
   if (!node.props) return;
 

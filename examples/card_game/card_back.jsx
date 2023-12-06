@@ -1,6 +1,4 @@
-import React from 'https://esm.sh/react@18.2.0';
-
-export default function Template() {
+export default function CardBack() {
   return (
     <img
       src="images/back.pdf"

@@ -8,7 +8,6 @@ export {
   rgb,
 } from 'https://cdn.skypack.dev/pdf-lib@1.17.1?dts';
 export type { Color as PdfLibColor } from 'https://cdn.skypack.dev/pdf-lib@1.17.1?dts';
-export { html as satoriHtml } from 'npm:satori-html@0.3.2';
 export { default as satori } from 'npm:satori@0.10.2';
 export type { Font } from 'npm:satori@0.10.2';
 export * as dotenv from 'https://deno.land/std@0.197.0/dotenv/mod.ts';
