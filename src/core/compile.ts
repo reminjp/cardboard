@@ -78,6 +78,15 @@ function transformHtmlAstInPlace(
   context: TransformHtmlAstInPlaceContext,
   node: ReactNode,
 ): void {
+  if (!node || typeof node !== 'object') return;
+
+  if (Array.isArray(node)) {
+    for (const childNode of node) {
+      transformHtmlAstInPlace(context, childNode);
+    }
+    return;
+  }
+
   if (!node.props) return;
 
   // Convert length units not supported by Satori (e.g. `mm`) to `px`.
@@ -117,16 +126,6 @@ function transformHtmlAstInPlace(
       context.imageAbsolutePathToIndex.set(imageAbsolutePath, imageIndex);
       context.imageAbsolutePaths[imageIndex] = imageAbsolutePath;
     }
-  }
-
-  if (!node.props.children) return;
-  if (typeof node.props.children === 'string') return;
-
-  if (Array.isArray(node.props.children)) {
-    for (const childNode of node.props.children) {
-      if (childNode) transformHtmlAstInPlace(context, childNode);
-    }
-    return;
   }
 
   transformHtmlAstInPlace(context, node.props.children);
