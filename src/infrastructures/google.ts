@@ -78,10 +78,9 @@ export function convertGoogleSheetToObjectArray(
   return rest.map((array) => {
     const record: Record<string, string> = {};
 
-    for (const [index, value] of array.entries()) {
-      const fieldName = fieldNames[index];
+    for (const [index, fieldName] of fieldNames.entries()) {
       if (!fieldName) continue;
-      record[fieldName] = value;
+      record[fieldName] = array[index] ?? '';
     }
 
     return record;
