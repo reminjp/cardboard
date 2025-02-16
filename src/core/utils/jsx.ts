@@ -3,7 +3,7 @@ import vm from 'node:vm';
 
 import swc from '@swc/core';
 
-import type { Template } from '../types.ts';
+import type { Template } from '../types.js';
 
 const INDEX_JS_CODE = `import { default as t } from '$template';
 

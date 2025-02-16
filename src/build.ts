@@ -3,20 +3,20 @@ import path from 'node:path';
 
 import { parse as parseCsv } from 'csv-parse/sync';
 import { parse as parseToml } from 'smol-toml';
-import { compile } from './core/compile.ts';
-import { postProcess } from './core/postProcess.ts';
-import { render } from './core/render.ts';
-import type { Table, Template } from './core/types.ts';
-import { readFontsForSatori } from './core/utils/font.ts';
-import { buildTemplateJsx } from './core/utils/jsx.ts';
-import { Length } from './core/utils/length.ts';
+import { compile } from './core/compile.js';
+import { postProcess } from './core/postProcess.js';
+import { render } from './core/render.js';
+import type { Table, Template } from './core/types.js';
+import { readFontsForSatori } from './core/utils/font.js';
+import { buildTemplateJsx } from './core/utils/jsx.js';
+import { Length } from './core/utils/length.js';
 import {
   convertGoogleSheetToObjectArray,
   getGoogleSheet,
   getGoogleSheetNameById,
   initializeGoogle,
-} from './infrastructures/google.ts';
-import { projectSchema } from './schemas.ts';
+} from './infrastructures/google.js';
+import { projectSchema } from './schemas.js';
 
 export async function runBuild(
   projectDirectoryPath: string | undefined,

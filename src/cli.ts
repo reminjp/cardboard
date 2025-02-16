@@ -1,6 +1,6 @@
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
-import { runBuild } from './build.ts';
+import { runBuild } from './build.js';
 
 export const cli = yargs(hideBin(process.argv))
   .scriptName('cardboard')

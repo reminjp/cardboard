@@ -7,16 +7,16 @@ import {
   PLACEHOLDER_SVG_PREFIX,
   PLACEHOLDER_SVG_SUFFIX,
   SVG_DATA_URI_PREFIX,
-} from './constants.ts';
+} from './constants.js';
 import type {
   CardAstNode,
   CompileResult,
   ReactNode,
   Table,
   Template,
-} from './types.ts';
-import { Color } from './utils/color.ts';
-import { Length, replaceAllSupportedLengthToIpx } from './utils/length.ts';
+} from './types.js';
+import { Color } from './utils/color.js';
+import { Length, replaceAllSupportedLengthToIpx } from './utils/length.js';
 
 interface CompileInput {
   bleed: Length;
@@ -58,7 +58,7 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
     const cardSvgAst = parseSvg(cardSvg);
     const cardAstNodes = compileSvgAst({}, cardSvgAst);
 
-    if (cardAstNodes.length >= 1) {
+    if (cardAstNodes[0]) {
       result.cards.push({
         ast:
           cardAstNodes.length === 1

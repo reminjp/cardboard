@@ -1,16 +1,20 @@
 {
   "name": "@remin/cardboard",
-  "version": "0.0.0",
+  "version": "0.0.0-dev",
   "type": "module",
   "module": "index.ts",
   "bin": {
-    "cardboard": "bin/cardboard.ts"
+    "cardboard": "bin/index.ts"
   },
+  "files": ["bin", "dist"],
   "scripts": {
+    "build": "tsc",
     "format": "sort-package-json && bunx @biomejs/biome check --write .",
-    "prepare": "lefthook install",
-    "start": "bin/cli.ts build --cwd examples/card_game",
-    "typecheck": "tsc"
+    "prepack": "bun run build",
+    "prepare": "lefthook install || true",
+    "publish": "git-publish",
+    "start": "bin/index.js build --cwd examples/card_game",
+    "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@swc/core": "1.10.16",
@@ -27,9 +31,11 @@
   },
   "devDependencies": {
     "@biomejs/biome": "1.9.4",
+    "@tsconfig/node-lts": "22.0.1",
     "@types/lodash.groupby": "4.6.9",
     "@types/svg-parser": "2.0.6",
     "@types/yargs": "17.0.33",
+    "git-publish": "2.1.0",
     "lefthook": "1.10.10",
     "sort-package-json": "2.14.0"
   }

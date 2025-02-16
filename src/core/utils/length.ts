@@ -1,4 +1,4 @@
-import { FLOAT_AND_UNIT_PATTERN } from './regexp.ts';
+import { FLOAT_AND_UNIT_PATTERN } from './regexp.js';
 
 /** Intermediate pixels per inch. `lcm(254, 96, 72) * 1000` */
 const IPX_PER_IN = 36576 * 1000;
@@ -28,13 +28,13 @@ export class Length {
 
       const [, numberString, unit] =
         thing.match(new RegExp(`^${FLOAT_AND_UNIT_PATTERN}$`)) ?? [];
-      const number = Number.parseFloat(numberString);
+      const number = Number.parseFloat(numberString ?? '');
 
       if (!numberString || Number.isNaN(number)) {
         throw new Error(`Invalid length string: ${thing}`);
       }
 
-      if (!(LENGTH_UNITS as readonly string[]).includes(unit)) {
+      if (!unit || !(LENGTH_UNITS as readonly string[]).includes(unit)) {
         throw new Error(`Unsupported unit: ${unit}`);
       }
 

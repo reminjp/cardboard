@@ -1,6 +1,6 @@
 import { PDFDocument, cmyk } from 'pdf-lib';
-import type { CompileResult } from './types.ts';
-import { Length } from './utils/length.ts';
+import type { CompileResult } from './types.js';
+import { Length } from './utils/length.js';
 
 const PRINT_AND_PLAY_TRIM_MARK_LENGTH_PT = new Length('mm', 1.5).toUnit(
   'pt',
@@ -48,7 +48,7 @@ export async function postProcess(
           rowIndex * columnCount +
           columnIndex;
 
-        if (cardIndex >= pdfEmbeddedPages.length) break;
+        if (!pdfEmbeddedPages[cardIndex]) break;
 
         pdfPage.drawPage(pdfEmbeddedPages[cardIndex], {
           x:

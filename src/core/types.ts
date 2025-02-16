@@ -1,6 +1,6 @@
 import type { Font, default as satori } from 'satori';
-import type { Color } from './utils/color.ts';
-import type { Length } from './utils/length.ts';
+import type { Color } from './utils/color.js';
+import type { Length } from './utils/length.js';
 
 type TableRecord = Record<string, string | undefined>;
 export type Table = TableRecord[];
