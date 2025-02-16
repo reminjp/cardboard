@@ -1,12 +1,14 @@
-import { base64, parseSvg, path, satori } from '../../deps.ts';
-import type { Font, Node, RootNode } from '../../deps.ts';
-import { Length, replaceAllSupportedLengthToIpx } from './utils/length.ts';
+import path from 'node:path';
+import type { Font } from 'satori';
+import { default as satori } from 'satori';
+import { parse as parseSvg } from 'svg-parser';
+import type { Node, RootNode } from 'svg-parser';
 import {
   PLACEHOLDER_SVG_PREFIX,
   PLACEHOLDER_SVG_SUFFIX,
   SVG_DATA_URI_PREFIX,
 } from './constants.ts';
-import {
+import type {
   CardAstNode,
   CompileResult,
   ReactNode,
@@ -14,6 +16,7 @@ import {
   Template,
 } from './types.ts';
 import { Color } from './utils/color.ts';
+import { Length, replaceAllSupportedLengthToIpx } from './utils/length.ts';
 
 interface CompileInput {
   bleed: Length;
@@ -57,10 +60,13 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
 
     if (cardAstNodes.length >= 1) {
       result.cards.push({
-        ast: cardAstNodes.length === 1 ? cardAstNodes[0] : {
-          type: 'group',
-          children: cardAstNodes,
-        },
+        ast:
+          cardAstNodes.length === 1
+            ? cardAstNodes[0]
+            : {
+                type: 'group',
+                children: cardAstNodes,
+              },
       });
     }
   }
@@ -118,9 +124,8 @@ function transformHtmlAstInPlace(
     const imageIndex =
       context.imageAbsolutePathToIndex.get(imageAbsolutePath) ?? imageCount;
 
-    const placeholderSvg =
-      `${PLACEHOLDER_SVG_PREFIX}${imageIndex}${PLACEHOLDER_SVG_SUFFIX}`;
-    node.props.src = `${SVG_DATA_URI_PREFIX}${base64.encode(placeholderSvg)}`;
+    const placeholderSvg = `${PLACEHOLDER_SVG_PREFIX}${imageIndex}${PLACEHOLDER_SVG_SUFFIX}`;
+    node.props.src = `${SVG_DATA_URI_PREFIX}${Buffer.from(placeholderSvg).toString('base64')}`;
 
     if (imageIndex === imageCount) {
       context.imageAbsolutePathToIndex.set(imageAbsolutePath, imageIndex);
@@ -160,9 +165,10 @@ function compileSvgAst(
 
       if (!href.startsWith(SVG_DATA_URI_PREFIX)) return [];
 
-      const placeholderSvg = new TextDecoder().decode(
-        base64.decode(href.slice(SVG_DATA_URI_PREFIX.length)),
-      );
+      const placeholderSvg = Buffer.from(
+        href.slice(SVG_DATA_URI_PREFIX.length),
+        'base64',
+      ).toString();
       const imageIndex = Number(
         placeholderSvg.slice(
           PLACEHOLDER_SVG_PREFIX.length,

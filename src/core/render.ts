@@ -1,9 +1,11 @@
-import { cmyk, PDFDocument, PDFPage, rgb } from '../../deps.ts';
-import type { PdfLibColor } from '../../deps.ts';
+import fs from 'node:fs/promises';
 
-import { Length } from './utils/length.ts';
-import { CardAstNode, CompileResult } from './types.ts';
+import type { PDFPage, Color as PdfLibColor } from 'pdf-lib';
+import { PDFDocument, cmyk, rgb } from 'pdf-lib';
+
+import type { CardAstNode, CompileResult } from './types.ts';
 import type { Color } from './utils/color.ts';
+import { Length } from './utils/length.ts';
 
 const SVG_PATH_SCALE = new Length('ipx', 1).toUnit('pt').number;
 
@@ -72,7 +74,7 @@ async function renderCardAstToPdfDocument(
           throw new Error('Unexpectedly failed to render an image.');
         }
 
-        const imageBytes = await Deno.readFile(imagePath);
+        const imageBytes = await fs.readFile(imagePath);
 
         const pdf = await PDFDocument.load(imageBytes);
         const pdfEmbeddedPage = await context.pdfDocument.embedPage(

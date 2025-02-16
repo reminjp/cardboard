@@ -1,18 +1,22 @@
+import fs from 'node:fs/promises';
+import path from 'node:path';
+
+import { parse as parseCsv } from 'csv-parse/sync';
+import { parse as parseToml } from 'smol-toml';
 import { compile } from './core/compile.ts';
-import { render } from './core/render.ts';
-import { Length } from './core/utils/length.ts';
-import { projectSchema } from './schemas.ts';
-import { Table, Template } from './core/types.ts';
 import { postProcess } from './core/postProcess.ts';
+import { render } from './core/render.ts';
+import type { Table, Template } from './core/types.ts';
 import { readFontsForSatori } from './core/utils/font.ts';
+import { buildTemplateJsx } from './core/utils/jsx.ts';
+import { Length } from './core/utils/length.ts';
 import {
   convertGoogleSheetToObjectArray,
   getGoogleSheet,
   getGoogleSheetNameById,
   initializeGoogle,
 } from './infrastructures/google.ts';
-import { csv, path, toml } from '../deps.ts';
-import { buildTemplateJsx } from './core/utils/jsx.ts';
+import { projectSchema } from './schemas.ts';
 
 export async function runBuild(
   projectDirectoryPath: string | undefined,
@@ -24,7 +28,7 @@ export async function runBuild(
 
   const projectDirectoryAbsolutePath = projectDirectoryPath
     ? path.resolve(projectDirectoryPath)
-    : Deno.cwd();
+    : process.cwd();
   const projectFileAbsolutePath = path.join(
     projectDirectoryAbsolutePath,
     'cardboard.toml',
@@ -33,7 +37,9 @@ export async function runBuild(
     path.resolve(projectDirectoryAbsolutePath, value);
 
   const project = projectSchema.parse(
-    toml.parse(await Deno.readTextFile(projectFileAbsolutePath)),
+    parseToml(
+      await fs.readFile(projectFileAbsolutePath, { encoding: 'utf-8' }),
+    ),
   );
 
   // TODO: Skip unused tables and templates.
@@ -47,15 +53,14 @@ export async function runBuild(
         tableConfig.spreadsheet_id,
         tableConfig.sheet_id,
       );
-      const sheet = await getGoogleSheet(
-        tableConfig.spreadsheet_id,
-        sheetName,
-      );
+      const sheet = await getGoogleSheet(tableConfig.spreadsheet_id, sheetName);
       table = convertGoogleSheetToObjectArray(sheet);
     } else {
       const tableCsvAbsolutePath = resolvePathInProjectFile(tableConfig.path);
-      const tableCsv = await Deno.readTextFile(tableCsvAbsolutePath);
-      table = csv.parse(tableCsv, { skipFirstRow: true });
+      const tableCsv = await fs.readFile(tableCsvAbsolutePath, {
+        encoding: 'utf-8',
+      });
+      table = parseCsv(tableCsv, { columns: true });
     }
 
     if (tableConfig.include_record_if) {
@@ -63,8 +68,10 @@ export async function runBuild(
         'record',
         `return ${tableConfig.include_record_if};`,
       );
-      table = table.filter((record) => f.call({}, { ...record }));
+      table = table?.filter((record) => f.call({}, { ...record }));
     }
+
+    if (!table) continue;
 
     tableByName.set(tableConfig.name, table);
   }
@@ -74,7 +81,9 @@ export async function runBuild(
     const templatejsxAbsolutePath = resolvePathInProjectFile(
       templateConfig.path,
     );
-    const templateJsx = await Deno.readTextFile(templatejsxAbsolutePath);
+    const templateJsx = await fs.readFile(templatejsxAbsolutePath, {
+      encoding: 'utf-8',
+    });
 
     templateByName.set(templateConfig.name, {
       absolutePath: templatejsxAbsolutePath,
@@ -138,8 +147,8 @@ export async function runBuild(
       isPrintAndPlay ? '_pnp' : ''
     }.pdf`;
 
-    await Deno.mkdir(resolvePathInProjectFile('build'), { recursive: true });
-    await Deno.writeFile(
+    await fs.mkdir(resolvePathInProjectFile('build'), { recursive: true });
+    await fs.writeFile(
       resolvePathInProjectFile(`build/${pdfFileName}`),
       pdfBytes,
     );

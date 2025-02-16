@@ -1,6 +1,6 @@
-import type { Font, satori } from '../../deps.ts';
-import { Color } from './utils/color.ts';
-import { Length } from './utils/length.ts';
+import type { Font, default as satori } from 'satori';
+import type { Color } from './utils/color.ts';
+import type { Length } from './utils/length.ts';
 
 type TableRecord = Record<string, string | undefined>;
 export type Table = TableRecord[];
@@ -29,27 +29,27 @@ interface Card {
 
 export type CardAstNode =
   | {
-    type: 'group';
-    children: CardAstNode[];
-  }
+      type: 'group';
+      children: CardAstNode[];
+    }
   | {
-    type: 'image';
-    x: Length;
-    y: Length;
-    width: Length;
-    height: Length;
-    imageIndex: number;
-  }
+      type: 'image';
+      x: Length;
+      y: Length;
+      width: Length;
+      height: Length;
+      imageIndex: number;
+    }
   | {
-    type: 'rect';
-    x: Length;
-    y: Length;
-    width: Length;
-    height: Length;
-    fillColor: Color;
-  }
+      type: 'rect';
+      x: Length;
+      y: Length;
+      width: Length;
+      height: Length;
+      fillColor: Color;
+    }
   | {
-    type: 'svgPath';
-    svgPath: string;
-    fillColor: Color;
-  };
+      type: 'svgPath';
+      svgPath: string;
+      fillColor: Color;
+    };

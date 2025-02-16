@@ -1,5 +1,8 @@
-import { groupBy } from '../../../deps.ts';
-import type { Font } from '../../../deps.ts';
+import child_process from 'node:child_process';
+import fs from 'node:fs/promises';
+
+import groupBy from 'lodash.groupby';
+import type { Font } from 'satori';
 
 export async function readFontsForSatori(
   familyNames: string[],
@@ -17,7 +20,7 @@ export async function readFontsForSatori(
     }
 
     for (const fcListItem of fcListItems) {
-      const data = await Deno.readFile(fcListItem.file);
+      const data = await fs.readFile(fcListItem.file);
 
       const weightAndStyle = parseWeightAndStyleForSatori(fcListItem.styleEn);
 
@@ -43,29 +46,20 @@ interface FcListItem {
 async function readFcListItems(): Promise<FcListItem[]> {
   const separator = crypto.randomUUID();
 
-  const command = new Deno.Command(
+  const fcList = child_process.spawnSync(
     'fc-list',
-    {
-      args: [
-        '--format',
-        `%{family}${separator}%{familylang}${separator}%{style}${separator}%{stylelang}${separator}%{file}\\n`,
-      ],
-    },
+    [
+      '--format',
+      `%{family}${separator}%{familylang}${separator}%{style}${separator}%{stylelang}${separator}%{file}\\n`,
+    ],
+    { encoding: 'utf8' },
   );
 
-  const output = await command.output();
-
-  if (output.code !== 0) {
-    {
-      throw new Error(
-        `Failed to read font list: ${new TextDecoder().decode(output.stderr)}`,
-      );
-    }
+  if (fcList.status !== 0) {
+    throw new Error(`Failed to read font list: ${fcList.stderr}`);
   }
 
-  const stdout = new TextDecoder().decode(output.stdout);
-
-  return stdout.split('\n').map<FcListItem>((line) => {
+  return fcList.stdout.split('\n').map<FcListItem>((line) => {
     const [
       family = '',
       familylang = '',
@@ -73,8 +67,8 @@ async function readFcListItems(): Promise<FcListItem[]> {
       stylelang = '',
       file = '',
     ] = line.split(separator);
-    const familyEn = family.split(',')[familylang.split(',').indexOf('en')] ??
-      '';
+    const familyEn =
+      family.split(',')[familylang.split(',').indexOf('en')] ?? '';
     const styleEn = style.split(',')[stylelang.split(',').indexOf('en')] ?? '';
     return { familyEn, styleEn, file };
   });

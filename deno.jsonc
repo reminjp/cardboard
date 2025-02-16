@@ -1,8 +1,0 @@
-{
-  "tasks": {
-    "run": "deno run --allow-env --allow-net --allow-read --allow-run --allow-write mod.ts build --cwd examples/card_game"
-  },
-  "fmt": {
-    "singleQuote": true
-  }
-}

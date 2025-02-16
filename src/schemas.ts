@@ -1,4 +1,4 @@
-import { z } from '../deps.ts';
+import { z } from 'zod';
 
 // TODO
 const lengthSchema = z.string().min(1);
@@ -18,10 +18,12 @@ export const projectSchema = z.object({
       table: nameSchema,
       template: nameSchema,
       bleed: lengthSchema,
-      print_and_play: z.object({
-        is_back: z.boolean().optional(),
-        repeat_record_for: z.string().min(1).optional(),
-      }).optional(),
+      print_and_play: z
+        .object({
+          is_back: z.boolean().optional(),
+          repeat_record_for: z.string().min(1).optional(),
+        })
+        .optional(),
     }),
   ),
   tables: z.array(

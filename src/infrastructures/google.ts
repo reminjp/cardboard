@@ -1,5 +1,5 @@
-import { google } from '../../deps.ts';
-import type { sheets_v4 } from '../../deps.ts';
+import { google } from 'googleapis';
+import type { sheets_v4 } from 'googleapis';
 import { googleSheetSchema } from '../schemas.ts';
 import { getRequiredEnv } from './env.ts';
 
@@ -37,9 +37,7 @@ export async function getGoogleSheet(
   const values = response.data.values;
 
   if (!values) {
-    throw new Error(
-      `Failed to read sheet: ${spreadsheetId} ${sheetName}`,
-    );
+    throw new Error(`Failed to read sheet: ${spreadsheetId} ${sheetName}`);
   }
 
   return googleSheetSchema.parse(values);
@@ -53,14 +51,12 @@ export async function getGoogleSheetNameById(
 
   const response = await sheets.spreadsheets.get({ spreadsheetId });
 
-  const sheet = response.data.sheets?.find((sheet) =>
-    sheet.properties?.sheetId === sheetId
+  const sheet = response.data.sheets?.find(
+    (sheet) => sheet.properties?.sheetId === sheetId,
   );
 
   if (!sheet) {
-    throw new Error(
-      `Sheet not found: ${spreadsheetId} ${sheetId}`,
-    );
+    throw new Error(`Sheet not found: ${spreadsheetId} ${sheetId}`);
   }
   if (!sheet.properties?.title) {
     throw new Error(`Sheet has no title: ${spreadsheetId} ${sheetId}`);

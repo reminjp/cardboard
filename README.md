@@ -13,19 +13,19 @@ It reads a card design template (JSX) and tabular data (CSV or Google Sheets) an
 
 Requirements:
 
-- [Deno](https://deno.com/)
+- Node.js 23
 - fontconfig (`fc-list` command)
 
 Install:
 
 ```sh
-deno install --allow-env --allow-net --allow-read --allow-run --allow-write --force --name cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
+npm install --global github:reminjp/cardboard
 ```
 
-Install (shortened):
+Uninstall:
 
 ```sh
-deno install -Af -n cardboard https://raw.githubusercontent.com/reminjp/cardboard/master/mod.ts
+npm uninstall --global github:reminjp/cardboard
 ```
 
 ## Usage

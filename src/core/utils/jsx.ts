@@ -1,90 +1,69 @@
-import { Template } from '../types.ts';
-import { bundle, path } from '../../../deps.ts';
+import path from 'node:path';
+import vm from 'node:vm';
 
-const BUNDLE_LOAD_RESPONSE_HEADERS = {
-  'content-type': 'application/javascript; charset=utf-8',
-} as const;
+import swc from '@swc/core';
 
-const JSX_RUNTIME_MODULE_CONTENT =
-  `export const _Fragment = Symbol.for('react.fragment');
+import type { Template } from '../types.ts';
 
-export function _jsx(type, props, ...children) {
+const INDEX_JS_CODE = `import { default as t } from '$template';
+
+globalThis.$Fragment = Symbol.for('react.fragment');
+
+globalThis.$jsx = (type, props, ...children) => {
   const newChildren = [];
   for (const child of children) {
     if (!child) continue;
-    if (child.type === _Fragment) {
+    if (child.type === $Fragment) {
       newChildren.push(...child.props.children);
     } else {
       newChildren.push(child);
     }
   }
   return { type, props: { ...props, children: newChildren } };
-}
+};
+
+$output((record) => $jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, t({ record })));
 `;
 
 export async function buildTemplateJsx(
-  absolutePath: string,
+  templateJsxPath: string,
   data: string,
 ): Promise<Template['renderHtmlAst']> {
-  const templateModuleUrl = path.toFileUrl(absolutePath).toString();
+  const { promise, resolve } =
+    Promise.withResolvers<Template['renderHtmlAst']>();
 
-  const rootModuleUrl = path.toFileUrl(path.join(
-    path.dirname(absolutePath),
-    `${crypto.randomUUID()}.jsx`,
-  )).toString();
-  const jsxRuntimeModuleUrl = path.toFileUrl(path.join(
-    path.dirname(absolutePath),
-    `${crypto.randomUUID()}.jsx`,
-  )).toString();
-
-  const bundleResult = await bundle(rootModuleUrl, {
-    compilerOptions: {
-      jsxFactory: '_jsx',
-      jsxFragmentFactory: '_Fragment',
-    },
-    load(specifier) {
-      switch (specifier) {
-        case rootModuleUrl: {
-          return Promise.resolve({
-            kind: 'module',
-            specifier,
-            content: `import { _jsx, _Fragment } from '${jsxRuntimeModuleUrl}';
-import { default as t } from '${templateModuleUrl}';
-console.log(_jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, t({ record })));`,
-            headers: BUNDLE_LOAD_RESPONSE_HEADERS,
-          });
-        }
-        case jsxRuntimeModuleUrl: {
-          return Promise.resolve({
-            kind: 'module',
-            specifier,
-            content: JSX_RUNTIME_MODULE_CONTENT,
-            headers: BUNDLE_LOAD_RESPONSE_HEADERS,
-          });
-        }
-        case templateModuleUrl: {
-          return Promise.resolve({
-            kind: 'module',
-            specifier,
-            content:
-              `import { _jsx, _Fragment } from '${jsxRuntimeModuleUrl}';\n${data}`,
-            headers: BUNDLE_LOAD_RESPONSE_HEADERS,
-          });
-        }
-        default: {
-          throw new Error(`Unexpected specifier: ${specifier}`);
-        }
-      }
-    },
-    minify: true,
+  const context = vm.createContext({
+    $output: (f: Template['renderHtmlAst']) => resolve(f),
   });
 
-  const functionBody = bundleResult.code.replaceAll(
-    /console\.log\(([\s\S]+)\);/g,
-    (_, expression) => `return ${expression};`,
-  );
+  const indexJsModule = new vm.SourceTextModule(INDEX_JS_CODE, {
+    context,
+  });
 
-  const f = new Function('record', functionBody);
+  const linker: vm.ModuleLinker = async (specifier, referencingModule) => {
+    if (specifier === '$template') {
+      const transformOutput = await swc.transform(data, {
+        filename: path.parse(templateJsxPath).base,
+        isModule: true,
+        jsc: {
+          parser: { syntax: 'typescript', tsx: true },
+          transform: {
+            react: {
+              pragma: '$jsx',
+              pragmaFrag: '$Fragment',
+            },
+          },
+        },
+      });
+      return new vm.SourceTextModule(transformOutput.code, {
+        context: referencingModule.context,
+      });
+    }
+    throw new Error(`Unable to resolve dependency: ${specifier}`);
+  };
 
-  return (record) => f.call({}, { ...record });
+  await indexJsModule.link(linker);
+  await indexJsModule.evaluate();
+
+  return await promise;
 }

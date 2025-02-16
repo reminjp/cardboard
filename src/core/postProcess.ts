@@ -1,9 +1,10 @@
-import { cmyk, PDFDocument } from '../../deps.ts';
-import { CompileResult } from './types.ts';
+import { PDFDocument, cmyk } from 'pdf-lib';
+import type { CompileResult } from './types.ts';
 import { Length } from './utils/length.ts';
 
-const PRINT_AND_PLAY_TRIM_MARK_LENGTH_PT =
-  new Length('mm', 1.5).toUnit('pt').number;
+const PRINT_AND_PLAY_TRIM_MARK_LENGTH_PT = new Length('mm', 1.5).toUnit(
+  'pt',
+).number;
 const TRIM_MARK_WIDTH_PT = 0.3;
 
 interface PostProcessInput {
@@ -42,17 +43,20 @@ export async function postProcess(
 
     for (let rowIndex = 0; rowIndex < rowCount; rowIndex++) {
       for (let columnIndex = 0; columnIndex < columnCount; columnIndex++) {
-        const cardIndex = pageIndex * (columnCount * rowCount) +
+        const cardIndex =
+          pageIndex * (columnCount * rowCount) +
           rowIndex * columnCount +
           columnIndex;
 
         if (cardIndex >= pdfEmbeddedPages.length) break;
 
         pdfPage.drawPage(pdfEmbeddedPages[cardIndex], {
-          x: (mediaWidthPt - columnCount * cardWidthPt) / 2 +
-            (input.isBack ? (columnCount - columnIndex - 1) : columnIndex) *
+          x:
+            (mediaWidthPt - columnCount * cardWidthPt) / 2 +
+            (input.isBack ? columnCount - columnIndex - 1 : columnIndex) *
               cardWidthPt,
-          y: (mediaHeightPt - rowCount * cardHeightPt) / 2 +
+          y:
+            (mediaHeightPt - rowCount * cardHeightPt) / 2 +
             (rowCount - rowIndex - 1) * cardHeightPt,
           width: cardWidthPt,
           height: cardHeightPt,
@@ -62,9 +66,11 @@ export async function postProcess(
 
     for (let rowIndex = 0; rowIndex < rowCount + 1; rowIndex++) {
       for (let columnIndex = 0; columnIndex < columnCount + 1; columnIndex++) {
-        const x = (mediaWidthPt - columnCount * cardWidthPt) / 2 +
+        const x =
+          (mediaWidthPt - columnCount * cardWidthPt) / 2 +
           columnIndex * cardWidthPt;
-        const y = (mediaHeightPt - rowCount * cardHeightPt) / 2 +
+        const y =
+          (mediaHeightPt - rowCount * cardHeightPt) / 2 +
           rowIndex * cardHeightPt;
 
         pdfPage.drawLine({
