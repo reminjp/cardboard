@@ -19,13 +19,13 @@ Requirements:
 Install:
 
 ```sh
-npm install --global github:reminjp/cardboard#npm/master
+npm install --global github:reminjp/cardboard#npm
 ```
 
 Uninstall:
 
 ```sh
-npm uninstall --global github:reminjp/cardboard#npm/master
+npm uninstall --global github:reminjp/cardboard#npm
 ```
 
 ## Usage

@@ -13,7 +13,7 @@
     "format": "sort-package-json && bunx @biomejs/biome check --write .",
     "prepack": "bun run build",
     "prepare": "lefthook install || true",
-    "publish": "git-publish",
+    "publish": "git-publish --branch npm --fresh",
     "start": "bin/index.js build --cwd examples/card_game",
     "typecheck": "tsc --noEmit"
   },
