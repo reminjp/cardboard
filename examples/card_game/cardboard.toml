@@ -1,0 +1,39 @@
+activated_fonts = ["Roboto"]
+
+[[targets]]
+name = "card_front"
+table = "card"
+template = "card_front"
+bleed = "3mm"
+print_and_play.repeat_record_for = "record.repeats || 1"
+
+[[targets]]
+name = "card_back"
+table = "card"
+template = "card_back"
+bleed = "3mm"
+print_and_play.is_back = true
+print_and_play.repeat_record_for = "record.repeats || 1"
+
+[[tables]]
+name = "card"
+path = "./card.csv"
+include_record_if = "record.name.length > 0"
+
+# [[tables]]
+# name = "card"
+# type = "google_sheets"
+# spreadsheet_id = "********************************************"
+# sheet_id = 0
+
+[[templates]]
+name = "card_front"
+path = "./card_front.jsx"
+width = "63mm"
+height = "88mm"
+
+[[templates]]
+name = "card_back"
+path = "./card_back.jsx"
+width = "63mm"
+height = "88mm"
