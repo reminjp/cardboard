@@ -1,7 +1,3 @@
-#!/usr/bin/env -S node --experimental-vm-modules
+#!/usr/bin/env node
 
-import dotenv from 'dotenv';
-import { cli } from '../dist/cli.js';
-
-dotenv.config();
-await cli.parse();
+import '../dist/cli.js';

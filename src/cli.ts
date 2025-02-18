@@ -1,8 +1,9 @@
+import dotenv from 'dotenv';
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import { runBuild } from './build.js';
 
-export const cli = yargs(hideBin(process.argv))
+const cli = yargs(hideBin(process.argv))
   .scriptName('cardboard')
   .version('0.1.0')
   .option('cwd', {
@@ -22,3 +23,6 @@ export const cli = yargs(hideBin(process.argv))
     },
   )
   .help();
+
+dotenv.config();
+await cli.parse();

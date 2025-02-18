@@ -1,14 +1,10 @@
 import path from 'node:path';
-import vm from 'node:vm';
 
-import swc from '@swc/core';
+import * as esbuild from 'esbuild';
 
 import type { Template } from '../types.js';
 
-const INDEX_JS_CODE = `import { default as t } from '$template';
-
-globalThis.$Fragment = Symbol.for('react.fragment');
-
+const INDEX_JS_CODE = `globalThis.$Fragment = Symbol.for('react.fragment');
 globalThis.$jsx = (type, props, ...children) => {
   const newChildren = [];
   for (const child of children) {
@@ -21,49 +17,35 @@ globalThis.$jsx = (type, props, ...children) => {
   }
   return { type, props: { ...props, children: newChildren } };
 };
-
-$output((record) => $jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, t({ record })));
+console.log($jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, t({ record })));
 `;
 
 export async function buildTemplateJsx(
   templateJsxPath: string,
-  data: string,
 ): Promise<Template['renderHtmlAst']> {
-  const { promise, resolve } =
-    Promise.withResolvers<Template['renderHtmlAst']>();
-
-  const context = vm.createContext({
-    $output: (f: Template['renderHtmlAst']) => resolve(f),
+  const buildResult = await esbuild.build({
+    stdin: {
+      contents: `import { default as t } from './${path.parse(templateJsxPath).base}';\n${INDEX_JS_CODE}`,
+      loader: 'jsx',
+      resolveDir: path.parse(templateJsxPath).dir,
+    },
+    platform: 'node',
+    jsxFactory: '$jsx',
+    jsxFragment: '$Fragment',
+    bundle: true,
+    write: false,
   });
 
-  const indexJsModule = new vm.SourceTextModule(INDEX_JS_CODE, {
-    context,
-  });
+  if (!buildResult.outputFiles[0]) {
+    throw new Error('Failed to build template.', { cause: buildResult.errors });
+  }
 
-  const linker: vm.ModuleLinker = async (specifier, referencingModule) => {
-    if (specifier === '$template') {
-      const transformOutput = await swc.transform(data, {
-        filename: path.parse(templateJsxPath).base,
-        isModule: true,
-        jsc: {
-          parser: { syntax: 'typescript', tsx: true },
-          transform: {
-            react: {
-              pragma: '$jsx',
-              pragmaFrag: '$Fragment',
-            },
-          },
-        },
-      });
-      return new vm.SourceTextModule(transformOutput.code, {
-        context: referencingModule.context,
-      });
-    }
-    throw new Error(`Unable to resolve dependency: ${specifier}`);
-  };
+  const functionBody = buildResult.outputFiles[0].text.replaceAll(
+    /console\.log\(([\s\S]+)\);/g,
+    (_, expression) => `return ${expression};`,
+  );
 
-  await indexJsModule.link(linker);
-  await indexJsModule.evaluate();
+  const f = new Function('record', functionBody);
 
-  return await promise;
+  return (record) => f.call({}, { ...record });
 }

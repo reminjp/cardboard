@@ -81,18 +81,12 @@ export async function runBuild(
     const templatejsxAbsolutePath = resolvePathInProjectFile(
       templateConfig.path,
     );
-    const templateJsx = await fs.readFile(templatejsxAbsolutePath, {
-      encoding: 'utf-8',
-    });
 
     templateByName.set(templateConfig.name, {
       absolutePath: templatejsxAbsolutePath,
       width: Length.from(templateConfig.width),
       height: Length.from(templateConfig.height),
-      renderHtmlAst: await buildTemplateJsx(
-        templatejsxAbsolutePath,
-        templateJsx,
-      ),
+      renderHtmlAst: await buildTemplateJsx(templatejsxAbsolutePath),
     });
   }
 
