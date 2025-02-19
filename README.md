@@ -13,19 +13,19 @@ It reads a card design template (JSX) and tabular data (CSV or Google Sheets) an
 
 Requirements:
 
-- Node.js 23
+- Node.js or Bun
 - fontconfig (`fc-list` command)
 
 Install:
 
 ```sh
-npm install --global github:reminjp/cardboard#npm
+bun install --global github:reminjp/cardboard#npm
 ```
 
 Uninstall:
 
 ```sh
-npm uninstall --global github:reminjp/cardboard#npm
+bun uninstall --global github:reminjp/cardboard#npm
 ```
 
 ## Usage
