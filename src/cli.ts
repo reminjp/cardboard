@@ -10,6 +10,9 @@ const cli = yargs(hideBin(process.argv))
     description: 'Specify a current working directory.',
     type: 'string',
   })
+  .command('$0', false, {}, () => {
+    cli.showHelp();
+  })
   .command(
     'build',
     'Build a sheet.',

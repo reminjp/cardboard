@@ -9,7 +9,7 @@
   "files": ["bin", "dist"],
   "scripts": {
     "build": "tsc",
-    "dev": "bun run src/cli.js build --cwd examples/card_game",
+    "dev": "bun run src/cli.ts build --cwd examples/card_game",
     "format": "sort-package-json && bunx @biomejs/biome check --write .",
     "prepack": "bun run build",
     "prepare": "lefthook install || true",
