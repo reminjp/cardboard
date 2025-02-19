@@ -1,4 +1,4 @@
-export default function CardFront({ record }) {
+export default function CardFront({ data }) {
   return (
     <>
       <img
@@ -35,7 +35,7 @@ export default function CardFront({ record }) {
             fontWeight: 'bold',
           }}
         >
-          {record.name}
+          {data.name}
         </div>
         <img
           src="images/art.pdf"
@@ -58,7 +58,7 @@ export default function CardFront({ record }) {
             fontSize: '4mm',
           }}
         >
-          {record.description.split('\\n').map((s, i) => (
+          {data.description.split('\\n').map((s, i) => (
             <div key={i} style={{ display: 'flex' }}>
               {s}
             </div>

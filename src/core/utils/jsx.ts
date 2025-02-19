@@ -17,7 +17,7 @@ globalThis.$jsx = (type, props, ...children) => {
   }
   return { type, props: { ...props, children: newChildren } };
 };
-console.log($jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, t({ record })));
+console.log($jsx('div', { style: { "display": "flex", "flexDirection": "column", "width": "100%", "height": "100%" } }, t({ data })));
 `;
 
 export async function buildTemplateJsx(
@@ -45,7 +45,7 @@ export async function buildTemplateJsx(
     (_, expression) => `return ${expression};`,
   );
 
-  const f = new Function('record', functionBody);
+  const f = new Function('data', functionBody);
 
   return (record) => f.call({}, { ...record });
 }

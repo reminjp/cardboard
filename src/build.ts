@@ -65,7 +65,7 @@ export async function runBuild(
 
     if (tableConfig.include_record_if) {
       const f = new Function(
-        'record',
+        'data',
         `return ${tableConfig.include_record_if};`,
       );
       table = table?.filter((record) => f.call({}, { ...record }));
@@ -99,7 +99,7 @@ export async function runBuild(
     }
     if (isPrintAndPlay && targetConfig.print_and_play?.repeat_record_for) {
       const f = new Function(
-        'record',
+        'data',
         `return ${targetConfig.print_and_play.repeat_record_for};`,
       );
       table = table.flatMap((record) => {
