@@ -8,7 +8,7 @@ export type Table = TableRecord[];
 export type ReactNode = Parameters<typeof satori>[0];
 
 export interface Template {
-  absolutePath: string;
+  filePath: string;
   width: Length;
   height: Length;
   renderHtmlAst: (record: TableRecord) => ReactNode;

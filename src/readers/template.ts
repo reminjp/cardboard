@@ -1,8 +1,24 @@
 import path from 'node:path';
-
 import * as esbuild from 'esbuild';
+import type { Template } from '../core/types.js';
+import { Length } from '../core/utils/length.js';
+import type { Project } from './project.js';
 
-import type { Template } from '../types.js';
+export async function readTemplate(
+  projectDirectoryPath: string,
+  templateConfig: Project['templates'][number],
+): Promise<Template> {
+  const templateJsxPath = path.resolve(
+    projectDirectoryPath,
+    templateConfig.path,
+  );
+  return {
+    filePath: templateJsxPath,
+    width: Length.from(templateConfig.width),
+    height: Length.from(templateConfig.height),
+    renderHtmlAst: await buildTemplateJsx(templateJsxPath),
+  };
+}
 
 const INDEX_JS_CODE = `globalThis.$Fragment = Symbol.for('react.fragment');
 globalThis.$jsx = (type, props, ...children) => {

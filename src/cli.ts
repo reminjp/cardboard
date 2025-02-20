@@ -22,7 +22,7 @@ const cli = yargs(hideBin(process.argv))
         type: 'boolean',
       }),
     async (argv) => {
-      await runBuild(argv.cwd, argv.printAndPlay ?? false);
+      await runBuild(argv.cwd || process.cwd(), argv.printAndPlay ?? false);
     },
   )
   .help();

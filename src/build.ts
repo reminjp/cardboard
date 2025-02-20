@@ -1,93 +1,54 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { parse as parseCsv } from 'csv-parse/sync';
-import { parse as parseToml } from 'smol-toml';
 import { compile } from './core/compile.js';
 import { postProcess } from './core/postProcess.js';
 import { render } from './core/render.js';
 import type { Table, Template } from './core/types.js';
 import { readFontsForSatori } from './core/utils/font.js';
-import { buildTemplateJsx } from './core/utils/jsx.js';
 import { Length } from './core/utils/length.js';
-import {
-  convertGoogleSheetToObjectArray,
-  getGoogleSheet,
-  getGoogleSheetNameById,
-  initializeGoogle,
-} from './infrastructures/google.js';
-import { projectSchema } from './schemas.js';
+import { readProject } from './readers/project.js';
+import { readTable } from './readers/table.js';
+import { readTemplate } from './readers/template.js';
 
 export async function runBuild(
-  projectDirectoryPath: string | undefined,
+  projectDirectoryPath: string,
   isPrintAndPlay: boolean,
 ) {
   /*
    * Read source files.
    */
+  const project = await readProject(projectDirectoryPath);
 
-  const projectDirectoryAbsolutePath = projectDirectoryPath
-    ? path.resolve(projectDirectoryPath)
-    : process.cwd();
-  const projectFileAbsolutePath = path.join(
-    projectDirectoryAbsolutePath,
-    'cardboard.toml',
+  const usedTableNameSet = new Set(
+    project.targets.map((target) => target.table),
   );
-  const resolvePathInProjectFile = (value: string) =>
-    path.resolve(projectDirectoryAbsolutePath, value);
-
-  const project = projectSchema.parse(
-    parseToml(
-      await fs.readFile(projectFileAbsolutePath, { encoding: 'utf-8' }),
-    ),
+  const usedTemplateNameSet = new Set(
+    project.targets.map((target) => target.template),
   );
 
-  // TODO: Skip unused tables and templates.
   const tableByName = new Map<string, Table>();
-  for (const tableConfig of project.tables) {
-    let table: Table | undefined;
-
-    if (tableConfig.type === 'google_sheets') {
-      await initializeGoogle();
-      const sheetName = await getGoogleSheetNameById(
-        tableConfig.spreadsheet_id,
-        tableConfig.sheet_id,
-      );
-      const sheet = await getGoogleSheet(tableConfig.spreadsheet_id, sheetName);
-      table = convertGoogleSheetToObjectArray(sheet);
-    } else {
-      const tableCsvAbsolutePath = resolvePathInProjectFile(tableConfig.path);
-      const tableCsv = await fs.readFile(tableCsvAbsolutePath, {
-        encoding: 'utf-8',
-      });
-      table = parseCsv(tableCsv, { columns: true });
+  for (const tableName of usedTableNameSet) {
+    const tableConfig = project.tables.find(
+      (table) => table.name === tableName,
+    );
+    if (!tableConfig) {
+      throw new Error(`undefined table "${tableName}"`);
     }
-
-    if (tableConfig.include_record_if) {
-      const f = new Function(
-        'data',
-        `return ${tableConfig.include_record_if};`,
-      );
-      table = table?.filter((record) => f.call({}, { ...record }));
-    }
-
-    if (!table) continue;
-
+    const table = await readTable(project.directoryPath, tableConfig);
     tableByName.set(tableConfig.name, table);
   }
 
   const templateByName = new Map<string, Template>();
-  for (const templateConfig of project.templates) {
-    const templatejsxAbsolutePath = resolvePathInProjectFile(
-      templateConfig.path,
+  for (const templateName of usedTemplateNameSet) {
+    const templateConfig = project.templates.find(
+      (template) => template.name === templateName,
     );
-
-    templateByName.set(templateConfig.name, {
-      absolutePath: templatejsxAbsolutePath,
-      width: Length.from(templateConfig.width),
-      height: Length.from(templateConfig.height),
-      renderHtmlAst: await buildTemplateJsx(templatejsxAbsolutePath),
-    });
+    if (!templateConfig) {
+      throw new Error(`undefined template "${templateName}"`);
+    }
+    const template = await readTemplate(project.directoryPath, templateConfig);
+    templateByName.set(templateConfig.name, template);
   }
 
   const fonts = await readFontsForSatori(project.activated_fonts);
@@ -141,9 +102,11 @@ export async function runBuild(
       isPrintAndPlay ? '_pnp' : ''
     }.pdf`;
 
-    await fs.mkdir(resolvePathInProjectFile('build'), { recursive: true });
+    await fs.mkdir(path.resolve(project.directoryPath, 'build'), {
+      recursive: true,
+    });
     await fs.writeFile(
-      resolvePathInProjectFile(`build/${pdfFileName}`),
+      path.resolve(project.directoryPath, `build/${pdfFileName}`),
       pdfBytes,
     );
   }

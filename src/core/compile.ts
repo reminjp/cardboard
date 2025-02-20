@@ -42,7 +42,7 @@ export async function compile(input: CompileInput): Promise<CompileResult> {
 
     transformHtmlAstInPlace(
       {
-        cardEjsDirectoryAbsolutePath: path.dirname(input.template.absolutePath),
+        cardEjsDirectoryAbsolutePath: path.dirname(input.template.filePath),
         imageAbsolutePathToIndex,
         imageAbsolutePaths: result.imageAbsolutePaths,
       },
