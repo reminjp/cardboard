@@ -2,9 +2,17 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 import { parse as parseToml } from 'smol-toml';
 import { z } from 'zod';
+import { Length } from '../types/length.js';
 
-// TODO
-const lengthSchema = z.string().min(1);
+const lengthSchema = z.string().refine((v) => {
+  try {
+    Length.from(v);
+    return true;
+  } catch {
+    return false;
+  }
+});
+
 const nameSchema = z.string().min(1);
 const pathSchema = z.string().min(1);
 
