@@ -17,10 +17,10 @@ export class Color {
 
       return new Color(
         'rgba',
-        Number.parseInt(thing.slice(0, 2), 16) / 256,
-        Number.parseInt(thing.slice(2, 4), 16) / 256,
-        Number.parseInt(thing.slice(4, 6), 16) / 256,
-        Number.parseInt(thing.slice(6, 8), 16) / 256,
+        Number.parseInt(thing.slice(0, 2), 16) / 255,
+        Number.parseInt(thing.slice(2, 4), 16) / 255,
+        Number.parseInt(thing.slice(4, 6), 16) / 255,
+        Number.parseInt(thing.slice(6, 8), 16) / 255,
       );
     }
 
