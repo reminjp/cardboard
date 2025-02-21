@@ -1,7 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import { parse as parseCsv } from 'csv-parse/sync';
-import type { Table } from '../core/types.js';
+import type { Table } from '../build-steps/types.js';
 import {
   convertGoogleSheetToObjectArray,
   getGoogleSheet,

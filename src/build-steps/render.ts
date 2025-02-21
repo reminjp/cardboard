@@ -3,9 +3,9 @@ import fs from 'node:fs/promises';
 import type { PDFPage, Color as PdfLibColor } from 'pdf-lib';
 import { PDFDocument, cmyk, rgb } from 'pdf-lib';
 
+import type { Color } from '../types/color.js';
+import { Length } from '../types/length.js';
 import type { CardAstNode, CompileResult } from './types.js';
-import type { Color } from './utils/color.js';
-import { Length } from './utils/length.js';
 
 const SVG_PATH_SCALE = new Length('ipx', 1).toUnit('pt').number;
 
@@ -71,7 +71,7 @@ async function renderCardAstToPdfDocument(
       try {
         const imagePath = context.sheet.imageAbsolutePaths[node.imageIndex];
         if (!imagePath) {
-          throw new Error('Unexpectedly failed to render an image.');
+          throw new Error('unexpectedly failed to render an image');
         }
 
         const imageBytes = await fs.readFile(imagePath);

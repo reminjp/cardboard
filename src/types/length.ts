@@ -31,11 +31,11 @@ export class Length {
       const number = Number.parseFloat(numberString ?? '');
 
       if (!numberString || Number.isNaN(number)) {
-        throw new Error(`Invalid length string: ${thing}`);
+        throw new Error(`invalid length string "${thing}"`);
       }
 
       if (!unit || !(LENGTH_UNITS as readonly string[]).includes(unit)) {
-        throw new Error(`Unsupported unit: ${unit}`);
+        throw new Error(`unsupported unit "${unit}"`);
       }
 
       return new Length(unit as LengthUnit, number);

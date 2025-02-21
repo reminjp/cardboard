@@ -16,7 +16,7 @@ export async function readFontsForSatori(
     const fcListItems = fcListItemsByFamilyName[familyName];
 
     if (!fcListItems) {
-      throw Error(`Font family not found: ${familyName}`);
+      throw Error(`font family not found "${familyName}"`);
     }
 
     for (const fcListItem of fcListItems) {
@@ -56,7 +56,7 @@ async function readFcListItems(): Promise<FcListItem[]> {
   );
 
   if (fcList.status !== 0) {
-    throw new Error(`Failed to read font list: ${fcList.stderr}`);
+    throw new Error('failed to read font list', { cause: fcList.stderr });
   }
 
   return fcList.stdout.split('\n').map<FcListItem>((line) => {

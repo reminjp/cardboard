@@ -1,7 +1,7 @@
 import path from 'node:path';
 import * as esbuild from 'esbuild';
-import type { Template } from '../core/types.js';
-import { Length } from '../core/utils/length.js';
+import type { Template } from '../build-steps/types.js';
+import { Length } from '../types/length.js';
 import type { Project } from './project.js';
 
 export async function readTemplate(

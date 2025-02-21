@@ -13,7 +13,7 @@ export class Color {
         hex = `${hex}ff`;
       }
 
-      if (hex.length !== 8) throw new Error(`Invalid color string: ${thing}`);
+      if (hex.length !== 8) throw new Error(`invalid color string "${thing}"`);
 
       return new Color(
         'rgba',
@@ -31,7 +31,7 @@ export class Color {
         .split(/\s+/)
         .map((v) => {
           if (v.endsWith('%')) return Number.parseFloat(v.slice(0, -1)) / 100;
-          throw new Error(`Invalid color string: ${thing}`);
+          throw new Error(`invalid color string "${thing}"`);
         });
 
       return new Color(
@@ -43,7 +43,7 @@ export class Color {
       );
     }
 
-    throw new Error(`Invalid color string: ${thing}`);
+    throw new Error(`invalid color string "${thing}"`);
   }
 
   readonly type: ColorType;

@@ -1,6 +1,6 @@
 import { PDFDocument, cmyk } from 'pdf-lib';
+import { Length } from '../types/length.js';
 import type { CompileResult } from './types.js';
-import { Length } from './utils/length.js';
 
 const PRINT_AND_PLAY_TRIM_MARK_LENGTH_PT = new Length('mm', 1.5).toUnit(
   'pt',

@@ -1,15 +1,15 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 
-import { compile } from './core/compile.js';
-import { postProcess } from './core/postProcess.js';
-import { render } from './core/render.js';
-import type { Table, Template } from './core/types.js';
-import { readFontsForSatori } from './core/utils/font.js';
-import { Length } from './core/utils/length.js';
-import { readProject } from './readers/project.js';
-import { readTable } from './readers/table.js';
-import { readTemplate } from './readers/template.js';
+import { compile } from './build-steps/compile.js';
+import { postProcess } from './build-steps/postProcess.js';
+import { render } from './build-steps/render.js';
+import type { Table, Template } from './build-steps/types.js';
+import { readProject } from './file-readers/project.js';
+import { readTable } from './file-readers/table.js';
+import { readTemplate } from './file-readers/template.js';
+import { readFontsForSatori } from './types/font.js';
+import { Length } from './types/length.js';
 
 export async function runBuild(
   projectDirectoryPath: string,
@@ -55,9 +55,8 @@ export async function runBuild(
 
   for (const targetConfig of project.targets) {
     let table = tableByName.get(targetConfig.table);
-    if (!table) {
-      throw new Error(`Undefined table: ${targetConfig.table}`);
-    }
+    if (!table) continue;
+
     if (isPrintAndPlay && targetConfig.print_and_play?.repeat_record_for) {
       const f = new Function(
         'data',
@@ -70,9 +69,7 @@ export async function runBuild(
     }
 
     const template = templateByName.get(targetConfig.template);
-    if (!template) {
-      throw new Error(`Undefined template: ${targetConfig.template}`);
-    }
+    if (!template) continue;
 
     /*
      * Build PDF.

@@ -3,6 +3,8 @@ import type { Font } from 'satori';
 import { default as satori } from 'satori';
 import { parse as parseSvg } from 'svg-parser';
 import type { Node, RootNode } from 'svg-parser';
+import { Color } from '../types/color.js';
+import { Length, replaceAllSupportedLengthToIpx } from '../types/length.js';
 import {
   PLACEHOLDER_SVG_PREFIX,
   PLACEHOLDER_SVG_SUFFIX,
@@ -15,8 +17,6 @@ import type {
   Table,
   Template,
 } from './types.js';
-import { Color } from './utils/color.js';
-import { Length, replaceAllSupportedLengthToIpx } from './utils/length.js';
 
 interface CompileInput {
   bleed: Length;

@@ -1,7 +1,9 @@
 import { google } from 'googleapis';
 import type { sheets_v4 } from 'googleapis';
-import { googleSheetSchema } from '../schemas.js';
+import { z } from 'zod';
 import { getRequiredEnv } from './env.js';
+
+const googleSheetSchema = z.array(z.array(z.string()));
 
 const SCOPES = [
   'https://www.googleapis.com/auth/spreadsheets.readonly',
